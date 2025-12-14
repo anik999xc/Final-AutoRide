@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Home Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .phone-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100%;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-icon {
+            color: #4355f9;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .status-toggle {
+            display: flex;
+            background-color: #f1f1f1;
+            border-radius: 30px;
+            padding: 3px;
+            width: 180px;
+        }
+        
+        .status-btn {
+            flex: 1;
+            padding: 8px 12px;
+            text-align: center;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .offline {
+            background-color: transparent;
+            color: #333;
+        }
+        
+        .online {
+            background-color: transparent;
+            color: #333;
+        }
+        
+        .offline.active {
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .online.active {
+            background-color: #4cd964;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-icon {
+            color: #4355f9;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .profile-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .profile-pic {
+            width: 60px;
+            height: 60px;
+            background-color: #4355f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            color: #ffc107;
+        }
+        
+        .rating span {
+            color: #666;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        
+        .location-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .location-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .location-icon {
+            color: #4355f9;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .location-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .location-detail {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+            padding-left: 28px;
+        }
+        
+        .price-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .price-per-km {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .distance {
+            color: #4355f9;
+            font-weight: 500;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 5px;
+            border-top: 1px solid #eee;
+            background-color: white;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: #4355f9;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .location-status {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .status-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .status-value {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #4355f9;
+            border-radius: 50%;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="header">
+            <div class="menu-icon">
+                <i class="fas fa-bars">☰</i>
+            </div>
+            <div class="status-toggle">
+                <div class="status-btn offline active" id="offlineBtn">Offline</div>
+                <div class="status-btn online" id="onlineBtn">Online</div>
+            </div>
+            <div class="notification-icon">
+                <i class="fas fa-bell">🔔</i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="profile-section">
+                <div class="profile-pic">J</div>
+                <div class="profile-info">
+                    <div class="profile-name">Joy</div>
+                    <div class="rating">
+                        ★★★★☆ <span>3.5(3.5)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="location-card">
+                <div class="location-header">
+                    <div class="location-icon">⬇️</div>
+                    <div class="location-name" id="currentLocation">Lajamni Chowk, Surat, India</div>
+                </div>
+                <div class="location-detail" id="locationDetail">
+                    AR Mall and Multiplex app. panvelpoint, Mota Varachha, Surat, Gujarat 394101, India
+                </div>
+                
+                <div class="price-info">
+                    <div class="price">$168.0</div>
+                    <div class="price-per-km">80.00$/Km</div>
+                    <div class="distance">2.10 Km</div>
+                </div>
+            </div>
+            
+            <div class="location-status">
+                <div class="status-title">Driver Status</div>
+                <div class="status-value" id="driverStatus">Offline - Location tracking is disabled</div>
+            </div>
+            
+            <div class="location-status">
+                <div class="status-title">Current Coordinates</div>
+                <div class="status-value" id="coordinatesValue">Not available</div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">📋</div>
+                <div>Request</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">💰</div>
+                <div>My Earning</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">⭐</div>
+                <div>My Review</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">💼</div>
+                <div>Wallet</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const LOCATIONIQ_API_KEY = "pk.b8d8d41e1d6dc5b30e37b1d668451f4a";
+        const UPDATE_INTERVAL = 3000; // 3 seconds
+        
+        // DOM Elements
+        const offlineBtn = document.getElementById('offlineBtn');
+        const onlineBtn = document.getElementById('onlineBtn');
+        const driverStatus = document.getElementById('driverStatus');
+        const coordinatesValue = document.getElementById('coordinatesValue');
+        const currentLocation = document.getElementById('currentLocation');
+        const locationDetail = document.getElementById('locationDetail');
+        
+        // Variables
+        let isOnline = false;
+        let locationUpdateInterval = null;
+        let currentPosition = null;
+        
+        // Initialize the app
+        function initApp() {
+            // Load saved status
+            loadDriverStatus();
+            
+            // Set up event listeners
+            offlineBtn.addEventListener('click', setOfflineStatus);
+            onlineBtn.addEventListener('click', setOnlineStatus);
+            
+            // Check if geolocation is available
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+        }
+        
+        // Load driver status from localStorage
+        function loadDriverStatus() {
+            const savedStatus = localStorage.getItem('driverStatus');
+            
+            if (savedStatus === 'online') {
+                setOnlineStatus();
+            } else {
+                setOfflineStatus();
+            }
+        }
+        
+        // Set driver status to online
+        function setOnlineStatus() {
+            isOnline = true;
+            
+            // Update UI
+            offlineBtn.classList.remove('active');
+            onlineBtn.classList.add('active');
+            driverStatus.innerHTML = 'Online - Location tracking is active <div class="loading"></div>';
+            
+            // Save status
+            localStorage.setItem('driverStatus', 'online');
+            
+            // Start location tracking
+            startLocationTracking();
+        }
+        
+        // Set driver status to offline
+        function setOfflineStatus() {
+            isOnline = false;
+            
+            // Update UI
+            onlineBtn.classList.remove('active');
+            offlineBtn.classList.add('active');
+            driverStatus.textContent = 'Offline - Location tracking is disabled';
+            
+            // Save status
+            localStorage.setItem('driverStatus', 'offline');
+            
+            // Stop location tracking
+            stopLocationTracking();
+        }
+        
+        // Start tracking location
+        function startLocationTracking() {
+            if (locationUpdateInterval) {
+                clearInterval(locationUpdateInterval);
+            }
+            
+            // Get location immediately
+            updateLocation();
+            
+            // Then set interval to update every 3 seconds
+            locationUpdateInterval = setInterval(updateLocation, UPDATE_INTERVAL);
+        }
+        
+        // Stop tracking location
+        function stopLocationTracking() {
+            if (locationUpdateInterval) {
+                clearInterval(locationUpdateInterval);
+                locationUpdateInterval = null;
+            }
+        }
+        
+        // Update location
+        function updateLocation() {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    // Store current position
+                    currentPosition = position;
+                    
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    
+                    // Update coordinates display
+                    coordinatesValue.textContent = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+                    
+                    // Save location to localStorage
+                    saveDriverLocation(latitude, longitude);
+                    
+                    // Reverse geocode to get address
+                    reverseGeocode(latitude, longitude);
+                },
+                error => {
+                    console.error("Error getting location:", error);
+                    coordinatesValue.textContent = "Error: " + error.message;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        }
+        
+        // Save driver location to localStorage
+        function saveDriverLocation(latitude, longitude) {
+            const locationData = {
+                latitude,
+                longitude,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('driverLocation', JSON.stringify(locationData));
+        }
+        
+        // Reverse geocode using LocationIQ
+        function reverseGeocode(latitude, longitude) {
+            const url = `https://us1.locationiq.com/v1/reverse.php?key=${LOCATIONIQ_API_KEY}&lat=${latitude}&lon=${longitude}&format=json`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        // Extract main location and details
+                        const addressParts = data.display_name.split(', ');
+                        const mainLocation = addressParts.slice(0, 2).join(', ');
+                        const details = data.display_name;
+                        
+                        // Update UI
+                        currentLocation.textContent = mainLocation;
+                        locationDetail.textContent = details;
+                        
+                        // Save address to localStorage
+                        saveDriverAddress(mainLocation, details);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error in reverse geocoding:", error);
+                });
+        }
+        
+        // Save driver address to localStorage
+        function saveDriverAddress(mainLocation, details) {
+            const addressData = {
+                mainLocation,
+                details,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('driverAddress', JSON.stringify(addressData));
+        }
+        
+        // Initialize the app when the document is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

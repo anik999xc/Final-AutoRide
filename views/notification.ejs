@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#007bff" />
+
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => {
+        console.log('Service Worker registered successfully.');
+      })
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err);
+      });
+  }
+</script>
+
+    
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.querySelector("button");
+
+            button.addEventListener("click", () => {
+                Notification.requestPermission().then(perm => {
+                    if (perm === "granted") {
+                        const notification = new Notification("Example notification", {
+                            body: "This is more text",
+                            data: { hello: "world" },
+                            icon: "Logo Centered.png",
+                        });
+
+                        notification.addEventListener("error", (e) => {
+                            alert("error");
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <button>Click</button>
+</body>
+</html>

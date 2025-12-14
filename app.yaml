@@ -1,0 +1,19 @@
+# app.yaml
+runtime: nodejs20 # Node.js এর সাম্প্রতিক ভার্সন (আপনি nodejs18 বা অন্য কোনো ভার্সন ব্যবহার করতে পারেন)
+env: standard    # App Engine স্ট্যান্ডার্ড এনভায়রনমেন্ট
+service: default # আপনার প্রথম সার্ভিস, এটি সাধারণত 'default' থাকে
+
+# আপনার অ্যাপ্লিকেশন চালু করার কমান্ড।
+# আপনার প্রজেক্টে যদি 'server.js' ফাইল থাকে, তবে এটি সঠিক।
+# যদি আপনি 'npm start' ব্যবহার করতে চান, তাহলে নিচের লাইনটি পরিবর্তন করতে পারেন:
+# entrypoint: npm start
+entrypoint: node server.js
+
+# মেমরি এবং সিপিইউ কনফিগারেশন। F1 একটি কম খরচের ক্লাউড রিসোর্স।
+instance_class: F1
+
+# হ্যান্ডলার (URL Routing)
+handlers:
+# সমস্ত URL রিকোয়েস্ট আপনার Node.js অ্যাপ্লিকেশনে পাঠাবে।
+- url: /.*
+  script: auto

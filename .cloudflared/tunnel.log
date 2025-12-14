@@ -1,0 +1,99 @@
+nohup: ignoring input
+2025-04-22T11:14:38Z INF Starting tunnel tunnelID=038c06a8-42b1-4c07-b79c-15bdfa505cef
+2025-04-22T11:14:38Z INF Version 2025.4.0 (Checksum 88f0cb545f677e33588b4261b25c5a150a552e692448bfc8f1138526642dec15)
+2025-04-22T11:14:38Z INF GOOS: android, GOVersion: go1.24.1, GoArch: arm64
+2025-04-22T11:14:38Z INF Settings: map[config:/storage/emulated/0/Anik/.cloudflared/config.yml cred-file:/storage/emulated/0/Anik/.cloudflared/038c06a8-42b1-4c07-b79c-15bdfa505cef.json credentials-file:/storage/emulated/0/Anik/.cloudflared/038c06a8-42b1-4c07-b79c-15bdfa505cef.json]
+2025-04-22T11:14:38Z INF Environmental variables map[TUNNEL_ORIGIN_CERT:/storage/emulated/0/Anik/.cloudflared/cert.pem]
+2025-04-22T11:14:38Z INF Autoupdate frequency is set autoupdateFreq=86400000
+2025-04-22T11:14:38Z INF Generated Connector ID: 6a77b92e-b852-4795-b10e-80432251f989
+2025-04-22T11:14:38Z ERR Failed to fetch features, default to disable error="lookup cfd-features.argotunnel.com on [::1]:53: read udp [::1]:47723->[::1]:53: read: connection refused"
+2025-04-22T11:14:38Z WRN Unable to lookup protocol percentage.
+2025-04-22T11:14:38Z INF Initial protocol http2
+2025-04-22T11:14:39Z INF ICMP proxy will use 192.168.1.16 as source for IPv4
+2025-04-22T11:14:39Z INF ICMP proxy will use :: as source for IPv6
+2025-04-22T11:14:39Z WRN The user running cloudflared process has a GID (group ID) that is not within ping_group_range. You might need to add that user to a group within that range, or instead update the range to encompass a group the user is already in by modifying /proc/sys/net/ipv4/ping_group_range. Otherwise cloudflared will not be able to ping this network error="open /proc/sys/net/ipv4/ping_group_range: permission denied"
+2025-04-22T11:14:39Z INF ICMP proxy will use 192.168.1.16 as source for IPv4
+2025-04-22T11:14:39Z INF ICMP proxy will use :: as source for IPv6
+2025-04-22T11:14:39Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2025-04-22T11:14:40Z INF Registered tunnel connection connIndex=0 connection=c1475ab0-eccb-477d-9e7c-7a5fe67c0509 event=0 ip=198.41.200.23 location=bom10 protocol=http2
+2025-04-22T11:14:40Z INF Updated to new configuration config="{\"ingress\":[{\"hostname\":\"autoride.space\", \"originRequest\":{}, \"service\":\"http://192.168.1.16:3000\"}, {\"originRequest\":{}, \"service\":\"http_status:404\"}], \"warp-routing\":{\"enabled\":false}}" version=2
+2025-04-22T11:14:41Z INF Registered tunnel connection connIndex=1 connection=264b3ba5-aa67-49bb-aa9a-f368bc040a5b event=0 ip=198.41.192.227 location=maa04 protocol=http2
+2025-04-22T11:14:42Z INF Registered tunnel connection connIndex=2 connection=96c16181-4a97-4cbf-8a63-9bfc1cd241bb event=0 ip=198.41.200.13 location=bom11 protocol=http2
+2025-04-22T11:14:43Z INF Registered tunnel connection connIndex=3 connection=8bde2e89-a963-4e33-aa5a-99f044516484 event=0 ip=198.41.192.27 location=maa01 protocol=http2
+2025-04-22T11:16:42Z INF Lost connection with the edge connIndex=3
+2025-04-22T11:16:42Z WRN Serve tunnel error error="connection with edge closed" connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:16:42Z INF Retrying connection in up to 1s connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:16:42Z INF Lost connection with the edge connIndex=2
+2025-04-22T11:16:42Z WRN Serve tunnel error error="connection with edge closed" connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:16:42Z INF Retrying connection in up to 1s connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:16:42Z ERR failed to serve incoming request error="Error shutting down control stream: client disconnected"
+2025-04-22T11:16:42Z ERR failed to serve incoming request error="Error shutting down control stream: client disconnected"
+2025-04-22T11:16:43Z INF Lost connection with the edge connIndex=0
+2025-04-22T11:16:43Z INF Lost connection with the edge connIndex=1
+2025-04-22T11:16:43Z ERR Serve tunnel error error="connection with edge closed" connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:16:43Z ERR failed to serve incoming request error="Error shutting down control stream: client disconnected"
+2025-04-22T11:16:43Z INF Retrying connection in up to 1s connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:16:43Z ERR failed to serve incoming request error="Error shutting down control stream: client disconnected"
+2025-04-22T11:16:43Z ERR Serve tunnel error error="connection with edge closed" connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:16:43Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:16:43Z ERR Connection terminated error="connection with edge closed" connIndex=1
+2025-04-22T11:16:43Z ERR Connection terminated error="connection with edge closed" connIndex=0
+2025-04-22T11:16:43Z ERR Connection terminated error="connection with edge closed" connIndex=2
+2025-04-22T11:16:44Z ERR Connection terminated error="connection with edge closed" connIndex=3
+2025-04-22T11:18:38Z INF Registered tunnel connection connIndex=2 connection=8ec8b5ae-ca47-4b0a-aebf-125882798222 event=0 ip=198.41.200.13 location=bom12 protocol=http2
+2025-04-22T11:18:38Z INF Registered tunnel connection connIndex=3 connection=0a7cac42-3eec-412d-bcc4-4d8dbf5bf34a event=0 ip=198.41.192.27 location=maa04 protocol=http2
+2025-04-22T11:18:38Z INF Registered tunnel connection connIndex=1 connection=cdd44ccc-19b1-40ab-acdf-4e2fd78eeebc event=0 ip=198.41.192.227 location=maa05 protocol=http2
+2025-04-22T11:18:38Z INF Registered tunnel connection connIndex=0 connection=02102984-4288-4619-8729-e6657515c1b7 event=0 ip=198.41.200.23 location=bom11 protocol=http2
+2025-04-22T11:19:36Z INF Lost connection with the edge connIndex=1
+2025-04-22T11:19:36Z WRN Serve tunnel error error="connection with edge closed" connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:19:36Z INF Retrying connection in up to 1s connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:19:36Z ERR failed to serve incoming request error="Error shutting down control stream: context canceled"
+2025-04-22T11:19:36Z INF Lost connection with the edge connIndex=2
+2025-04-22T11:19:36Z WRN Serve tunnel error error="connection with edge closed" connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:19:36Z INF Retrying connection in up to 1s connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:19:36Z INF Lost connection with the edge connIndex=3
+2025-04-22T11:19:36Z ERR failed to serve incoming request error="Error shutting down control stream: context canceled"
+2025-04-22T11:19:36Z WRN Serve tunnel error error="connection with edge closed" connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:19:36Z INF Retrying connection in up to 1s connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:19:36Z ERR failed to serve incoming request error="Error shutting down control stream: context canceled"
+2025-04-22T11:19:36Z INF Lost connection with the edge connIndex=0
+2025-04-22T11:19:36Z WRN Serve tunnel error error="connection with edge closed" connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:19:36Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:19:36Z ERR failed to serve incoming request error="Error shutting down control stream: context canceled"
+2025-04-22T11:19:36Z ERR Connection terminated error="connection with edge closed" connIndex=3
+2025-04-22T11:19:36Z ERR Connection terminated error="connection with edge closed" connIndex=0
+2025-04-22T11:19:37Z ERR Connection terminated error="connection with edge closed" connIndex=2
+2025-04-22T11:19:38Z ERR Connection terminated error="connection with edge closed" connIndex=1
+2025-04-22T11:20:16Z ERR failed to serve incoming request error="rpc: connection closed"
+2025-04-22T11:20:16Z ERR failed to serve incoming request error="context deadline exceeded"
+2025-04-22T11:20:16Z ERR Register tunnel error from server side error="rpc: connection closed" connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:20:16Z ERR failed to serve incoming request error="context deadline exceeded"
+2025-04-22T11:20:16Z INF Retrying connection in up to 4s connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:20:16Z ERR failed to serve incoming request error="context deadline exceeded"
+2025-04-22T11:20:16Z ERR Register tunnel error from server side error="context deadline exceeded" connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:20:16Z INF Retrying connection in up to 4s connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:20:16Z ERR Register tunnel error from server side error="context deadline exceeded" connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:20:16Z INF Retrying connection in up to 4s connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:20:16Z ERR Register tunnel error from server side error="context deadline exceeded" connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:20:16Z INF Retrying connection in up to 4s connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:20:16Z ERR Connection terminated error="rpc: connection closed" connIndex=2
+2025-04-22T11:20:17Z ERR Connection terminated error="context deadline exceeded" connIndex=3
+2025-04-22T11:20:17Z ERR Connection terminated error="context deadline exceeded" connIndex=0
+2025-04-22T11:20:18Z ERR Connection terminated error="context deadline exceeded" connIndex=1
+2025-04-22T11:20:19Z INF Initiating graceful shutdown due to signal terminated ...
+2025-04-22T11:20:31Z INF Registered tunnel connection connIndex=0 connection=6c269e60-00f0-4ca9-8d91-f6e3ae76127b event=0 ip=198.41.200.23 location=bom11 protocol=http2
+2025-04-22T11:20:31Z INF Unregistered tunnel connection connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:20:31Z INF Registered tunnel connection connIndex=2 connection=82a47641-0ba6-4243-aa43-04aea5f2deb8 event=0 ip=198.41.200.13 location=bom12 protocol=http2
+2025-04-22T11:20:31Z INF Registered tunnel connection connIndex=1 connection=ea933ec6-8cc5-46d9-b429-63e1ea8ae726 event=0 ip=198.41.192.227 location=maa05 protocol=http2
+2025-04-22T11:20:31Z INF Registered tunnel connection connIndex=3 connection=21d34cce-f9be-4396-bd4b-9ea9c0754bc6 event=0 ip=198.41.192.27 location=maa01 protocol=http2
+2025-04-22T11:20:31Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.23
+2025-04-22T11:20:32Z INF Unregistered tunnel connection connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:20:32Z INF Unregistered tunnel connection connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:20:32Z INF Retrying connection in up to 1s connIndex=2 event=0 ip=198.41.200.13
+2025-04-22T11:20:32Z INF Retrying connection in up to 1s connIndex=1 event=0 ip=198.41.192.227
+2025-04-22T11:20:32Z INF Unregistered tunnel connection connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:20:32Z INF Retrying connection in up to 1s connIndex=3 event=0 ip=198.41.192.27
+2025-04-22T11:20:32Z ERR no more connections active and exiting
+2025-04-22T11:20:32Z INF Tunnel server stopped
+2025-04-22T11:20:32Z ERR icmp router terminated error="context canceled"
+2025-04-22T11:20:32Z INF Metrics server stopped

@@ -1,0 +1,6 @@
+tunnel: 038c06a8-42b1-4c07-b79c-15bdfa505cef
+credentials-file: /storage/emulated/0/Anik/.cloudflared/038c06a8-42b1-4c07-b79c-15bdfa505cef.json
+ingress:
+  - hostname: autoride.space
+    service: http://localhost:3000
+  - service: http_status:404
