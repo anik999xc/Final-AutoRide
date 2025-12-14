@@ -7,7 +7,7 @@ service: default # আপনার প্রথম সার্ভিস, এট
 # আপনার প্রজেক্টে যদি 'server.js' ফাইল থাকে, তবে এটি সঠিক।
 # যদি আপনি 'npm start' ব্যবহার করতে চান, তাহলে নিচের লাইনটি পরিবর্তন করতে পারেন:
 # entrypoint: npm start
-entrypoint: node server.js
+entrypoint: npm start
 
 # মেমরি এবং সিপিইউ কনফিগারেশন। F1 একটি কম খরচের ক্লাউড রিসোর্স।
 instance_class: F1
