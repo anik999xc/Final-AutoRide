@@ -1,0 +1,11 @@
+steps:
+# 1. Node.js এর নির্ভরতা (dependencies) ইনস্টল করুন (npm install)
+# এটি 'node_modules' ফোল্ডার তৈরি করবে।
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install']
+
+# 2. অ্যাপ ইঞ্জিন-এ ডেপ্লয় করুন (gcloud app deploy)
+# এটি আপনার app.yaml ফাইলটি ব্যবহার করে ডেপ্লয়মেন্ট করবে।
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app', 'deploy']
+  timeout: '1600s' # দীর্ঘ ডেপ্লয়মেন্টের জন্য সময় বাড়ানো হলো
