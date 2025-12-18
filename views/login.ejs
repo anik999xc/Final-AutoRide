@@ -283,163 +283,148 @@
         </div>
     </div>
 
-    <script type="module">
-        // EmailJS initialization (VERY INSECURE!  FOR DEVELOPMENT ONLY, AND EVEN THEN, PREFER A SERVER)
-        emailjs.init({
-            publicKey: 'Fak1n43FGudoNISD3'
-        });
+   <script type="module">
+    // ১. সার্ভার (EJS) থেকে আসা এনভায়রনমেন্ট ভেরিয়েবলগুলো গ্রহণ করা
+    // server.js এ আমরা res.locals.env সেট করেছিলাম, তাই এখানে 'env' অবজেক্টটি সরাসরি পাওয়া যাবে।
+    const { 
+        SUPABASE_URL, 
+        SUPABASE_KEY, 
+        EMAILJS_PUBLIC_KEY, 
+        EMAILJS_SERVICE_ID, 
+        EMAILJS_TEMPLATE_ID 
+    } = <%- JSON.stringify(env) %>;
 
-        // Import Supabase
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    // ২. EmailJS initialization (সার্ভার থেকে আসা কী ব্যবহার করে)
+    emailjs.init({
+        publicKey: EMAILJS_PUBLIC_KEY
+    });
 
-        // Supabase config
-        const SUPABASE_URL = 'https://edboiyrmhpbihsuwccxk.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_EpE2CALYA4av_iugcbElnA_KIvEP2V-';
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    // ৩. Import Supabase
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        // Redirect to home if already logged in
-        if (localStorage.getItem('authKey')) {
-            window.location.href = '/home';
+    // ৪. Supabase client তৈরি (সার্ভার থেকে আসা কী ব্যবহার করে)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ৫. লগইন চেক (অপরিবর্তিত)
+    if (localStorage.getItem('authKey')) {
+        window.location.href = '/home';
+    }
+
+    // এলিমেন্ট সিলেক্ট করা
+    const emailInput = document.getElementById('email');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const otpInputDiv = document.getElementById('otpInputDiv');
+    const otpInput = document.getElementById('otp');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    let realOtp = null;
+    let timer = null;
+
+    function isValidEmail(email) {
+        return /\S+@\S+\.\S+/.test(email);
+    }
+
+    // OTP পাঠানোর লজিক
+    sendOtpBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+
+        if (!email || !isValidEmail(email)) {
+            alert('Please enter a valid email address.');
+            return;
         }
 
-        // Select elements
-        const emailInput = document.getElementById('email');
-        const sendOtpBtn = document.getElementById('sendOtpBtn');
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn = document.getElementById('loginBtn');
-        const otpInputDiv = document.getElementById('otpInputDiv');
-        const otpInput = document.getElementById('otp');
-        const timerDisplay = document.getElementById('timerDisplay');
-
-        let realOtp = null;
-        let timer = null;
-
-        // Email validation
-        function isValidEmail(email) {
-            return /\S+@\S+\.\S+/.test(email);
-        }
-
-        // Send OTP function
-        sendOtpBtn.addEventListener('click', async () => {
-            const email = emailInput.value.trim();
-
-            if (!email) {
-                alert('Please enter your email address.');
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-
-            // Check if the email exists in Supabase
+        try {
+            // Supabase এ ইমেইল চেক
             const { data, error } = await supabase
                 .from('users')
                 .select('email')
                 .eq('email', email);
 
-            if (error) {
-                alert('Error checking email.');
-                console.error('Supabase error:', error);
-                return;
-            }
-
+            if (error) throw error;
             if (data.length === 0) {
                 alert('Account not found. Please register.');
-                window.location.href = '/register'; // Redirect to register page
+                window.location.href = '/register';
                 return;
             }
 
-            // Generate 6-digit OTP
+            // OTP জেনারেট করা
             realOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            // Send OTP via EmailJS
-            try {
-                const response = await emailjs.send('service_pqj8mqx', 'template_f9xekrr', {
-                    to_email: email,
-                    email: email,
-                    to_name: 'User', // You might want to fetch the user's name if available
-                    from_name: "Login System",
-                    recipient: email,
-                    passcode: realOtp,
-                }, 'Fak1n43FGudoNISD3');
+            // EmailJS এর মাধ্যমে OTP পাঠানো (সার্ভার থেকে আসা আইডি ব্যবহার করে)
+            const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                to_email: email,
+                email: email,
+                to_name: 'User',
+                from_name: "AutoRide Login",
+                recipient: email,
+                passcode: realOtp,
+            }, EMAILJS_PUBLIC_KEY);
 
-                console.log('OTP sent successfully:', response);
-                alert('OTP sent to your email.');
+            alert('OTP sent to your email.');
 
-                // Disable email input and send OTP button, enable OTP input and login button
-                emailInput.disabled = true;
-                sendOtpBtn.style.display = 'none';
-                otpInputDiv.style.display = 'block';
-                loginBtn.style.display = 'block';
-                otpInput.focus();
-                timerDisplay.style.display = 'block';
+            // UI আপডেট
+            emailInput.disabled = true;
+            sendOtpBtn.style.display = 'none';
+            otpInputDiv.style.display = 'block';
+            loginBtn.style.display = 'block';
+            otpInput.focus();
+            timerDisplay.style.display = 'block';
 
-                let countdown = 180;
-                timerDisplay.textContent = `OTP will expire in ${countdown} seconds`;
+            let countdown = 180;
+            timerDisplay.textContent = `OTP will expire in ${countdown} seconds`;
 
-                timer = setInterval(() => {
-                    countdown--;
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        emailInput.disabled = false;
-                        sendOtpBtn.style.display = 'block';
-                        otpInputDiv.style.display = 'none';
-                        loginBtn.style.display = 'none';
-                        timerDisplay.style.display = 'none';
-                        alert('OTP expired. Please resend.');
-                    } else {
-                        timerDisplay.textContent = `OTP will expire in ${countdown} seconds`;
-                    }
-                }, 1000);
+            clearInterval(timer);
+            timer = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    emailInput.disabled = false;
+                    sendOtpBtn.style.display = 'block';
+                    otpInputDiv.style.display = 'none';
+                    loginBtn.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    alert('OTP expired. Please resend.');
+                } else {
+                    timerDisplay.textContent = `OTP will expire in ${countdown} seconds`;
+                }
+            }, 1000);
 
-            } catch (error) {
-                alert('Failed to send OTP. Please check console for details.');
-                console.error('EmailJS error:', error);
-                return;
-            }
-        });
+        } catch (error) {
+            alert('Operation failed. Check console.');
+            console.error('Error:', error);
+        }
+    });
 
-        // Login function
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    // লগইন সাবমিট লজিক
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = otpInput.value.trim();
+        const email = emailInput.value.trim();
 
-            const otp = otpInput.value.trim();
-            const email = emailInput.value.trim();
+        if (otp !== realOtp) {
+            alert('Invalid OTP.');
+            return;
+        }
 
-            if (!otp) {
-                alert('Please enter the OTP.');
-                return;
-            }
+        const { data, error } = await supabase
+            .from('users')
+            .select('auth_key')
+            .eq('email', email)
+            .single();
 
-            if (otp !== realOtp) {
-                alert('Invalid OTP.');
-                return;
-            }
+        if (error || !data) {
+            alert('Login failed.');
+            return;
+        }
 
-            // Fetch user data to get the auth_key
-            const { data, error } = await supabase
-                .from('users')
-                .select('auth_key')
-                .eq('email', email)
-                .single(); // Assuming each email has only one user
+        localStorage.setItem('authKey', data.auth_key);
+        alert('Login successful!');
+        window.location.href = '/home';
+    });
+</script>
 
-            if (error) {
-                alert('Login failed. Could not verify user.');
-                console.error('Supabase error:', error);
-                return;
-            }
-
-            if (data && data.auth_key) {
-                localStorage.setItem('authKey', data.auth_key);
-                alert('Login successful!');
-                window.location.href = '/home'; // Redirect to home page
-            } else {
-                alert('Login failed. Could not retrieve authentication key.');
-            }
-        });
-    </script>
     
     <% if (typeof loadingScreen !== "undefined") { %>
     <%- loadingCss %>

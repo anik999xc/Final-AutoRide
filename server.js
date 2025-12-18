@@ -5,7 +5,7 @@ const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
 const uploadRoutes = require('./routes/upload');
 
-// Load environment variables
+// ১. Load environment variables (সবার উপরে রাখাই ভালো)
 dotenv.config();
 
 const app = express();
@@ -16,33 +16,41 @@ const socketio = require("socket.io");
 const server = http.createServer(app);
 const io = socketio(server);
 
+// ২. PORT কনফিগারেশন
 const PORT = process.env.PORT || 3000;
 
-app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
-app.use('/uploads/cover', express.static(path.join(__dirname, 'uploads/cover')));
-
-app.use('/upload', uploadRoutes);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Static files
+app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
+app.use('/uploads/cover', express.static(path.join(__dirname, 'uploads/cover')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Create a middleware for appending loading screen to every response
+// ৩. নতুন মিডলওয়্যার: .env ভ্যালুগুলো EJS-এ পাঠানোর জন্য (এটি গুরুত্বপূর্ণ)
 app.use((req, res, next) => {
-    // Original render function
+    res.locals.env = {
+        SUPABASE_URL: process.env.SUPABASE_URL,
+        SUPABASE_KEY: process.env.SUPABASE_KEY,
+        EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY,
+        EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,
+        EMAILJS_WELCOME_TEMPLATE_ID: process.env.EMAILJS_WELCOME_TEMPLATE_ID
+    };
+    next();
+});
+
+// ৪. Loading screen middleware (আপনার আগের লজিক অপরিবর্তিত রাখা হয়েছে)
+app.use((req, res, next) => {
     const originalRender = res.render;
-    
-    // Override the render function
     res.render = function(view, options, callback) {
-        // Default options object if none provided
         options = options || {};
-        
-        // Add loading screen resources to all responses
         if (!options.layout) {
             options.loadingCss = '<link rel="stylesheet" href="/css/loading.css">';
             options.loadingJs = '<script src="/js/loading.js"></script>';
@@ -55,30 +63,22 @@ app.use((req, res, next) => {
                 </div>
             `;
         }
-        
-        // Call the original render function
         originalRender.call(this, view, options, callback);
     };
-    
     next();
 });
 
 // Routes
+app.use('/upload', uploadRoutes);
 app.use('/', routes);
 
-// Socket.io connection
+// Socket.io logic (অপরিবর্তিত)
 io.on("connection", (socket) => {
     console.log("New WebSocket connection");
-
     socket.on("userType", (type) => {
-        console.log(`User connected as: ${type}`);
         socket.userType = type;
     });
-
     socket.on("send-location", (data) => {
-        console.log("Received location:", data);
-        
-        // Broadcast to all clients except sender
         socket.broadcast.emit("location-update", {
             id: data.id,
             latitude: data.latitude,
@@ -86,20 +86,16 @@ io.on("connection", (socket) => {
             userType: socket.userType
         });
     });
-
     socket.on("disconnect", () => {
-        console.log("WebSocket disconnected");
-        // Notify others that this user has disconnected
         socket.broadcast.emit("user-disconnected", socket.id);
     });
 });
 
-// 404 handler
+// Error handlers
 app.use((req, res) => {
     res.status(404).render('404', { title: 'Page Not Found' });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');

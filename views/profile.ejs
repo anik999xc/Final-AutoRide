@@ -608,91 +608,101 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Supabase configuration
-        const SUPABASE_URL = 'https://kmycrnsktgpqvrztavrq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtteWNybnNrdGdwcXZyenRhdnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzNDY2ODYsImV4cCI6MjA2MTkyMjY4Nn0.TwSLsgCMZiE-Io3R7SGwO2eMfi4ComWmpBy4JGtzGuU';
-        let supabaseClient;
-        let currentAuthKey;
-        let currentField;
+<script>
+    // ১. সার্ভার থেকে আসা এনভায়রনমেন্ট ভেরিয়েবল গ্রহণ (env থেকে)
+    const { 
+        SUPABASE_URL, 
+        SUPABASE_KEY 
+    } = <%- JSON.stringify(env) %>;
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Initialize Supabase client
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let supabaseClient;
+    let currentAuthKey;
+    let currentField;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        // ২. Supabase client তৈরি (সার্ভার থেকে আসা কী ব্যবহার করে)
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Local storage থেকে auth key নেওয়া
+        currentAuthKey = localStorage.getItem('authKey');
+        
+        if (currentAuthKey) {
+            // ইউজারের তথ্য লোড করা
+            await loadUserData();
             
-            // Get auth key from local storage
-            currentAuthKey = localStorage.getItem('authKey');
-            
-            if (currentAuthKey) {
-                // Load user data
-                await loadUserData();
-                
-                // Setup image upload handlers
+            // ইমেজ হ্যান্ডলার সেটআপ (যদি থাকে)
+            if (typeof setupImageHandlers === 'function') {
                 setupImageHandlers();
             }
-            
-            // Fix iOS 100vh issue
-            fixIOSViewportHeight();
-            
-            // Handle modal touch events better
-            setupModalTouchHandling();
-        });
-
-        // Fix for iOS Safari viewport height issues
-        function fixIOSViewportHeight() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            if (isIOS) {
-                document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-                window.addEventListener('resize', () => {
-                    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-                });
-            }
+        } else {
+            // যদি লগইন না থাকে তবে লগইন পেজে পাঠিয়ে দেওয়া
+            window.location.href = '/login';
         }
         
-        // Better touch handling for modals
-        function setupModalTouchHandling() {
-            const modal = document.getElementById('editModal');
-            const modalContent = modal.querySelector('.modal-content');
+        // iOS এবং মোডাল ফিক্স ফাংশন কল
+        fixIOSViewportHeight();
+        setupModalTouchHandling();
+    });
+
+    // ইউজারের তথ্য লোড করার ফাংশন
+    async function loadUserData() {
+        try {
+            // ৩. ডাটাবেস থেকে তথ্য আনা (আপনার নতুন কলাম অনুযায়ী)
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('name, address, emergency_number, email')
+                .eq('auth_key', currentAuthKey)
+                .single();
             
-            // Prevent modal close when swiping inside content
+            if (error) {
+                console.error('Supabase error:', error);
+                return;
+            }
+            
+            // UI আপডেট করা
+            if (data) {
+                if (data.name) document.getElementById('userName').textContent = data.name;
+                if (data.address) document.getElementById('useraddress').textContent = data.address;
+                if (data.emergency_number) document.getElementById('emergency_number').textContent = data.emergency_number;
+                if (data.email) document.getElementById('email').textContent = data.email;
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // iOS ভিউপোর্ট ফিক্স
+    function fixIOSViewportHeight() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+            window.addEventListener('resize', () => {
+                document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+            });
+        }
+    }
+    
+    // মোডাল টাচ হ্যান্ডলিং
+    function setupModalTouchHandling() {
+        const modal = document.getElementById('editModal');
+        if (!modal) return;
+        
+        const modalContent = modal.querySelector('.modal-content');
+        
+        if (modalContent) {
             modalContent.addEventListener('touchmove', function(e) {
                 e.stopPropagation();
             });
-            
-            // Close modal on background tap
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
         }
-
-        async function loadUserData() {
-            try {
-                // Fetch user data from Supabase
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('name, address, emergency_number, email')
-                    .eq('auth_key', currentAuthKey)
-                    .single();
-                
-                if (error) {
-                    console.error('Supabase error:', error);
-                    return;
-                }
-                
-                // Update UI with user data
-                if (data) {
-                    if (data.name) document.getElementById('userName').textContent = data.name;
-                    if (data.address) document.getElementById('useraddress').textContent = data.address;
-                    if (data.emergency_number) document.getElementById('emergency_number').textContent = data.emergency_number;
-                    if (data.email) document.getElementById('email').textContent = data.email;
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                if (typeof closeModal === 'function') closeModal();
             }
-        }
-      </script>
+        });
+    }
+</script>
+
 
             <!-- Error Messages -->
             <div id="profileErrorMsg" class="error-message">

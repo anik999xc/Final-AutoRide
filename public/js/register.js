@@ -1,117 +1,94 @@
-document.addEventListener('DOMContentLoaded', function() {
-  // Get form elements
-  const fullNameInput = document.getElementById('fullName');
-  const phoneInput = document.getElementById('phoneNumber');
-  const addressInput = document.getElementById('address');
-  const ageInput = document.getElementById('age');
-  const emergencyContactInput = document.getElementById('emergencyContact');
-  const registerForm = document.getElementById('registerForm');
 
-  // Error message elements
-  const fullNameError = document.getElementById('fullNameError');
-  const addressError = document.getElementById('addressError');
-  const ageError = document.getElementById('ageError');
-  const emergencyContactError = document.getElementById('emergencyContactError');
+    // ১. সার্ভার থেকে এনভায়রনমেন্ট ভেরিয়েবল গ্রহণ
+    const { 
+        SUPABASE_URL, 
+        SUPABASE_KEY, 
+        EMAILJS_PUBLIC_KEY, 
+        EMAILJS_SERVICE_ID, 
+        EMAILJS_TEMPLATE_ID 
+    } = <%- JSON.stringify(env) %>;
 
-  // Validation functions
-  function validateFullName() {
-    if (fullNameInput.value.trim().length < 3) {
-      fullNameError.textContent = 'Name must be at least 3 characters long';
-      fullNameInput.classList.add('error');
-      return false;
-    } else {
-      fullNameError.textContent = '';
-      fullNameInput.classList.remove('error');
-      return true;
-    }
-  }
+    // ২. EmailJS ও Supabase Initialization
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function validateAddress() {
-    if (addressInput.value.trim().length < 5) {
-      addressError.textContent = 'Please enter a valid address';
-      addressInput.classList.add('error');
-      return false;
-    } else {
-      addressError.textContent = '';
-      addressInput.classList.remove('error');
-      return true;
-    }
-  }
+    // এলিমেন্ট রেফারেন্স
+    const nameInput = document.getElementById('name');
+    const addressInput = document.getElementById('address');
+    const emergencyInput = document.getElementById('emergency');
+    const emailInput = document.getElementById('email');
+    const otpInput = document.getElementById('otp');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const registerForm = document.getElementById('registerForm');
+    const timerDisplay = document.getElementById('timerDisplay');
 
-  function validateAge() {
-    const age = parseInt(ageInput.value);
-    if (isNaN(age) || age < 18 || age > 100) {
-      ageError.textContent = 'Age must be between 18 and 100';
-      ageInput.classList.add('error');
-      return false;
-    } else {
-      ageError.textContent = '';
-      ageInput.classList.remove('error');
-      return true;
-    }
-  }
+    let realOtp = null;
+    let timer = null;
 
-  function validateEmergencyContact() {
-    const emergencyContact = emergencyContactInput.value.trim();
-    // Simple phone validation - adjust as needed
-    if (!/^\+?\d{10,15}$/.test(emergencyContact)) {
-      emergencyContactError.textContent = 'Please enter a valid emergency contact number';
-      emergencyContactInput.classList.add('error');
-      return false;
-    } else {
-      emergencyContactError.textContent = '';
-      emergencyContactInput.classList.remove('error');
-      return true;
-    }
-  }
+    // OTP পাঠানোর লজিক
+    sendOtpBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
 
-  // Add event listeners for validation
-  if (fullNameInput) {
-    fullNameInput.addEventListener('blur', validateFullName);
-    fullNameInput.addEventListener('input', () => {
-      fullNameInput.classList.remove('error');
-      fullNameError.textContent = '';
-    });
-  }
-
-  if (addressInput) {
-    addressInput.addEventListener('blur', validateAddress);
-    addressInput.addEventListener('input', () => {
-      addressInput.classList.remove('error');
-      addressError.textContent = '';
-    });
-  }
-
-  if (ageInput) {
-    ageInput.addEventListener('blur', validateAge);
-    ageInput.addEventListener('input', () => {
-      ageInput.classList.remove('error');
-      ageError.textContent = '';
-    });
-  }
-
-  if (emergencyContactInput) {
-    emergencyContactInput.addEventListener('blur', validateEmergencyContact);
-    emergencyContactInput.addEventListener('input', () => {
-      emergencyContactInput.classList.remove('error');
-      emergencyContactError.textContent = '';
-    });
-  }
-
-  // Form submission
-  if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
-      // Only validate form fields if they're enabled (OTP has been verified)
-      if (!fullNameInput.disabled) {
-        const isFullNameValid = validateFullName();
-        const isAddressValid = validateAddress();
-        const isAgeValid = validateAge();
-        const isEmergencyContactValid = validateEmergencyContact();
-        
-        if (!(isFullNameValid && isAddressValid && isAgeValid && isEmergencyContactValid)) {
-          e.preventDefault();
+        if (!name || !email || !addressInput.value || !emergencyInput.value) {
+            return alert('All fields are required.');
         }
-      }
+
+        try {
+            // ইমেইল চেক (Existing User)
+            const { data } = await supabase.from('users').select('email').eq('email', email);
+            if (data && data.length > 0) {
+                alert('Account already exists. Please login.');
+                return window.location.href = '/login';
+            }
+
+            realOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // EmailJS এরর ফিক্স (422 error solution)
+            const templateParams = {
+                to_email: email,    // EmailJS টেমপ্লেটে {{to_email}} ব্যবহার করুন
+                recipient: email,   // ব্যাকআপ প্যারামিটার
+                to_name: name,
+                passcode: realOtp
+            };
+
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+            
+            alert('OTP sent to ' + email);
+            otpInput.disabled = false;
+            otpInput.focus();
+            
+            // বাটন ডিজেবল ও টাইমার লজিক (অপরিবর্তিত)
+            sendOtpBtn.disabled = true;
+        } catch (error) {
+            console.error("Email Error:", error);
+            alert('Failed to send OTP. Check console.');
+        }
     });
-  }
-});
+
+    // রেজিস্ট্রেশন সাবমিট (ডাটাবেস সেভ)
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (otpInput.value.trim() !== realOtp) return alert('Invalid OTP.');
+
+        const authKey = crypto.randomUUID();
+
+        // ডাটাবেসে নতুন কলাম অনুযায়ী ইনসার্ট
+        const { error } = await supabase.from('users').insert([{
+            name: nameInput.value.trim(),
+            address: addressInput.value.trim(),
+            emergency_number: emergencyInput.value.trim(),
+            email: emailInput.value.trim(),
+            auth_key: authKey
+        }]);
+
+        if (error) {
+            console.error("DB Error:", error);
+            return alert('Database save failed!');
+        }
+
+        localStorage.setItem('authKey', authKey);
+        alert('Registration successful!');
+        window.location.href = '/home';
+    });

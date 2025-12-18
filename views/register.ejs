@@ -301,162 +301,112 @@
         </div>
     </div>
 
-    <script type="module">
-        // Import Supabase
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<script type="module">
+    // ১. এনভায়রনমেন্ট ভেরিয়েবল গ্রহণ (নতুন আইডি সহ)
+    const { 
+        SUPABASE_URL, 
+        SUPABASE_KEY, 
+        EMAILJS_PUBLIC_KEY, 
+        EMAILJS_SERVICE_ID, 
+        EMAILJS_TEMPLATE_ID,
+        EMAILJS_WELCOME_TEMPLATE_ID 
+    } = <%- JSON.stringify(env) %>;
 
-        // Supabase config
-        const SUPABASE_URL = 'https://kmycrnsktgpqvrztavrq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtteWNybnNrdGdwcXZyenRhdnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzNDY2ODYsImV4cCI6MjA2MTkyMjY4Nn0.TwSLsgCMZiE-Io3R7SGwO2eMfi4ComWmpBy4JGtzGuU';
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Redirect to home if already logged in
-        if (localStorage.getItem('authKey')) {
-            window.location.href = '/home';
+    // এলিমেন্ট রেফারেন্স
+    const nameInput = document.getElementById('name');
+    const addressInput = document.getElementById('address');
+    const emergencyInput = document.getElementById('emergency');
+    const emailInput = document.getElementById('email');
+    const otpInput = document.getElementById('otp');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const registerForm = document.getElementById('registerForm');
+
+    let realOtp = null;
+
+    // OTP পাঠানোর লজিক
+    sendOtpBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (!name || !email || !addressInput.value || !emergencyInput.value) {
+            return alert('All fields are required.');
         }
 
-        // Select elements
-        const nameInput = document.getElementById('name');
-        const addressInput = document.getElementById('address');
-        const emergencyInput = document.getElementById('emergency');
-        const emailInput = document.getElementById('email');
-        const otpInput = document.getElementById('otp');
-        const sendOtpBtn = document.getElementById('sendOtpBtn');
-        const registerForm = document.getElementById('registerForm');
-        const registerBtn = document.getElementById('registerBtn');
-        const timerDisplay = document.getElementById('timerDisplay');
-
-        let realOtp = null;
-        let timer = null;
-
-        // Email validation
-        function isValidEmail(email) {
-            return /\S+@\S+\.\S+/.test(email);
-        }
-
-        // Send OTP function
-        sendOtpBtn.addEventListener('click', async () => {
-            const name = nameInput.value.trim();
-            const address = addressInput.value.trim();
-            const emergency = emergencyInput.value.trim();
-            const email = emailInput.value.trim();
-
-            if (!name || !address || !emergency || !email) {
-                alert('All fields are required.');
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-
-            // Check if the email already exists in Supabase
-            const { data, error } = await supabase
-                .from('users')
-                .select('email')
-                .eq('email', email);
-
-            if (error) {
-                alert('Error checking email.');
-                console.error('Supabase error:', error);
-                return;
-            }
-
+        try {
+            const { data } = await supabase.from('users').select('email').eq('email', email);
             if (data && data.length > 0) {
-                alert('An account with this email already exists. Please log in.');
-                window.location.href = '/login'; // Redirect to login page
-                return; // Stop further execution, so OTP is not sent
+                alert('Account already exists. Please login.');
+                return window.location.href = '/login';
             }
 
-            // Generate 6-digit OTP
             realOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            // Send OTP via EmailJS - FIXED VERSION with multiple parameter options
-            try {
-                const response = await emailjs.send('service_pqj8mqx', 'template_f9xekrr', {
-                to_email: email,
-                email: email,         // Adding alternative parameter names to match template
-                to_name: name,        // Adding name parameter that might be needed
-                from_name: "Registration System", // Common parameter in templates
-                recipient: email,     // Another possible parameter name
-                passcode: realOtp,
-                }, 'Fak1n43FGudoNISD3');
+            const templateParams = {
+                email: email,    
+                to_name: name,
+                passcode: realOtp
+            };
 
-                console.log('Email sent successfully:', response);
-                alert('OTP sent to your email.');
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+            alert('OTP sent to ' + email);
+            otpInput.disabled = false;
+            otpInput.focus();
+            sendOtpBtn.disabled = true;
+        } catch (error) {
+            console.error("OTP Error:", error);
+            alert('Failed to send OTP.');
+        }
+    });
 
-                // Disable all except OTP input and register button
-                nameInput.disabled = true;
-                addressInput.disabled = true;
-                emergencyInput.disabled = true;
-                emailInput.disabled = true;
-                sendOtpBtn.disabled = true;
-                otpInput.disabled = false;
-                otpInput.focus();
-                
-                // Add pulsing effect to OTP field
-                otpInput.classList.add('pulse');
+    // রেজিস্ট্রেশন সাবমিট ও Welcome Email পাঠানো
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (otpInput.value.trim() !== realOtp) return alert('Invalid OTP.');
 
-                let countdown = 180;
-                timerDisplay.textContent = `You can resend OTP in ${countdown} seconds`;
+        const authKey = crypto.randomUUID();
+        const userData = {
+            name: nameInput.value.trim(),
+            address: addressInput.value.trim(),
+            emergency_number: emergencyInput.value.trim(),
+            email: emailInput.value.trim(),
+            auth_key: authKey
+        };
 
-                timer = setInterval(() => {
-                countdown--;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    nameInput.disabled = false;
-                    addressInput.disabled = false;
-                    emergencyInput.disabled = false;
-                    emailInput.disabled = false;
-                    sendOtpBtn.disabled = false;
-                    timerDisplay.textContent = '';
-                    otpInput.classList.remove('pulse');
-                } else {
-                    timerDisplay.textContent = `You can resend OTP in ${countdown} seconds`;
-                }
-                }, 1000);
+        // ২. ডাটাবেসে সেভ করা
+        const { error } = await supabase.from('users').insert([userData]);
 
-            } catch (error) {
-                alert('Failed to send OTP. Please check console for details.');
-                console.error('Error sending email:', error);
-                return;
-            }
-        });
+        if (error) {
+            console.error("DB Error:", error);
+            return alert('Registration failed!');
+        }
 
-        // Submit form
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ৩. Welcome Email পাঠানোর লজিক (অটোমেটিক)
+        try {
+            const welcomeParams = {
+                email: userData.email, // আপনার নতুন টেমপ্লেটে {{email}} ব্যবহার করবেন
+                to_name: userData.name, // টেমপ্লেটে {{to_name}} ব্যবহার করবেন
+                message: "Welcome to AutoRide! Your account has been successfully created."
+            };
 
-            const otp = otpInput.value.trim();
-            if (!otp || otp !== realOtp) {
-                alert('Invalid OTP.');
-                return;
-            }
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_WELCOME_TEMPLATE_ID, welcomeParams);
+            console.log("Welcome email sent successfully!");
+        } catch (mailErr) {
+            console.error("Welcome Email Error:", mailErr);
+            // ইমেইল না গেলেও রেজিস্ট্রেশন হয়ে গেছে, তাই ইউজারকে আটকানো হবে না
+        }
 
-            // Save auth key to localStorage
-            const authKey = crypto.randomUUID(); // or use a generated token
-            localStorage.setItem('authKey', authKey);
+        localStorage.setItem('authKey', authKey);
+        alert('Registration successful! Check your email for a welcome message.');
+        window.location.href = '/home';
+    });
+</script>
 
-            // Save user data to Supabase
-            const { error } = await supabase.from('users').insert([{
-                name: nameInput.value.trim(),
-                address: addressInput.value.trim(),
-                emergency_number: emergencyInput.value.trim(),
-                email: emailInput.value.trim(),
-                auth_key: authKey
-            }]);
 
-            if (error) {
-                alert('Registration failed.');
-                console.error(error);
-                return;
-            }
 
-            alert('Registration successful!');
-            window.location.href = '/home';
-        });
-    </script>
 
     <% if (typeof loadingScreen !== "undefined") { %>
     <%- loadingCss %>
