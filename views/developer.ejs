@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "url": "https://autoride.space/developer",
+    "logo": "https://autoride.space/img/logo.jpg"
+  }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Anik Paul | Full Stack Developer</title>
+  
+  
+  <link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#007bff" />
+
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => {
+        console.log('Service Worker registered successfully.');
+      })
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err);
+      });
+  }
+</script>
+
+  
+  
+  
+  
+  
+  <meta name="description" content="A modern, interactive portfolio website for Anik Paul showcasing skills in full stack development, web and app design.">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,400,300&display=swap">
+  <style>
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Montserrat', 'sans-serif';
+      background: #141627;
+      color: #f4f4f4;
+    }
+    .glass {
+      background: rgba(28,32,52,.6);
+      box-shadow: 0 4px 24px rgba(10,10,25,.12);
+      border-radius: 1.25rem;
+      backdrop-filter: blur(4px);
+    }
+    .hover-3d:hover {
+      transform: perspective(600px) rotateY(8deg) scale(1.02);
+      box-shadow: 0 12px 36px 0 rgba(27,205,189,.18);
+    }
+    .accent-bg {
+      background: linear-gradient(90deg,#1be1c8 0,#15b0ff 100%);
+      box-shadow: 0 2px 28px rgba(24,233,212,.18);
+    }
+    .animated-accent {
+      background: linear-gradient(270deg,#1be1c8,#2196f3,#ff00c8,#1be1c8);
+      background-size: 600% 600%;
+      -webkit-animation: gradientmove 8s ease-in-out infinite;
+      animation: gradientmove 8s ease-in-out infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    @keyframes gradientmove {
+      0% {background-position:0% 50%}
+      50% {background-position:100% 50%}
+      100% {background-position:0% 50%}
+    }
+    ::-webkit-scrollbar {width:8px; background: #1a1d2b;}
+    ::-webkit-scrollbar-thumb {background: #2196f3; border-radius:10px;}
+    @media (max-width: 900px) {
+      .lg\:flex-row {flex-direction: column;}
+      .lg\:w-1\/2 {width: 100%;}
+      .lg\:ml-10 {margin-left: 0;}
+    }
+    section {margin-bottom: 3rem;}
+    a {text-decoration: none;}
+    /* Custom dark input and focus color for Contact Form */
+    #contact-form input,
+    #contact-form textarea {
+      background-color: #101224 !important;
+      border-color: #14ffe9 !important;
+      color: #f4f4f4 !important;
+      box-shadow: none !important;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    #contact-form input:focus,
+    #contact-form textarea:focus {
+      border-color: #20e3c2 !important;
+      box-shadow: 0 0 0 2px #13292470 !important;
+      background: #181a2f !important;
+      color: #ebfbfa !important;
+      outline: none;
+    }
+    #contact-form label {
+      color: #c3f9f6;
+    }
+    #contact-form button:focus {
+      outline: 2px solid #1be1c8;
+      outline-offset: 1px;
+    }
+  </style>
+</head>
+<body class="bg-[#141627] text-gray-100 leading-relaxed">
+  <header class="flex items-center justify-between py-5 px-4 md:px-12 bg-gradient-to-b from-[#171a31] to-[#15182c] shadow-lg sticky top-0 z-30 mb-8">
+    <div class="flex items-center space-x-3">
+      <div class="rounded-full bg-gradient-to-tr from-[#1be1c8] to-[#2196f3] w-9 h-9 flex items-center justify-center shadow-lg">
+        <i class="fas fa-code text-white text-xl"></i>
+      </div>
+      <span class="text-xl font-bold tracking-widest animated-accent">Anik Paul</span>
+    </div>
+    <nav class="hidden md:flex space-x-8 font-semibold text-base">
+      <a href="#profile" class="hover:text-[#1be1c8] duration-150">Profile</a>
+      <a href="#skills" class="hover:text-[#1be1c8] duration-150">Skills</a>
+      <a href="#experience" class="hover:text-[#1be1c8] duration-150">Experience</a>
+      <a href="#education" class="hover:text-[#1be1c8] duration-150">Education</a>
+      <a href="#projects" class="hover:text-[#1be1c8] duration-150">Projects</a>
+      <a href="#contact" class="hover:text-[#1be1c8] duration-150">Contact</a>
+    </nav>
+    <a href="#contact" class="py-2 px-5 accent-bg rounded-full font-bold shadow-md ml-3 text-white text-sm hover:scale-105 focus:ring-2 focus:ring-[#1be1c8] duration-150">Let's Connect</a>
+  </header>
+  <main class="w-full px-3 md:px-16 mx-auto max-w-6xl">
+    <section id="profile" class="flex flex-col lg:flex-row items-center my-6 py-10 lg:py-14">
+      <div class="flex-1 flex flex-col items-start">
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight">
+          <span class="animated-accent">Hi, I'm Anik Paul</span>
+          <br>
+          <span class="text-[#20e3c2]">Full Stack Developer</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-7 max-w-xl font-medium">
+          Motivated and detail-oriented aspiring Full Stack Developer, passionate about building scalable web & app solutions with <span class="animated-accent">modern technologies</span>. Experienced in collaborating, learning rapidly, and delivering exceptional results.
+        </p>
+        <div class="flex space-x-5 mb-8">
+          <a href="#projects" class="accent-bg text-white px-6 py-2 rounded-full text-base font-bold shadow-lg hover:scale-105 transition">View Projects</a>
+          <a href="#contact" class="bg-[#191A2D] border border-[#1be1c8] text-[#1be1c8] px-6 py-2 rounded-full text-base font-bold shadow hover:bg-[#18e3d4]/10 hover:scale-105 transition">Hire Me</a>
+        </div>
+        <div class="flex items-center text-sm space-x-5 text-gray-400 mt-4">
+          <span><i class="fas fa-map-marker-alt text-[#2196f3]"></i> West Bengal, India</span>
+          <span><i class="fab fa-github text-[#20e3c2]"></i> <a href="https://github.com/" target="_blank" class="hover:underline">GitHub</a></span>
+        </div>
+      </div>
+      <div class="flex-1 flex items-center justify-center lg:ml-10 mt-10 lg:mt-0 relative">
+        <div class="glass hover-3d transition-transform duration-500 shadow-2xl p-6">
+          <div class="relative w-52 h-52 flex items-center justify-center rounded-full overflow-hidden bg-gradient-to-tr from-[#20e3c2] to-[#181c33] border-4 border-[#16193f] mx-auto">
+            <img src="/img/Anik.jpg" alt="Anik Paul" class="object-cover w-full h-full transform scale-105">
+            <div class="absolute inset-0 rounded-full pointer-events-none border-2 border-[#2196f3] opacity-40 animate-pulse"></div>
+          </div>
+          <div class="text-center mt-4">
+            <span class="block text-lg font-bold text-white">Anik Paul</span>
+            <span class="block text-xs tracking-wide text-gray-300 mt-1">Aspiring Full Stack Developer</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="skills" class="py-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold mb-6 animated-accent">Skills & Technologies</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fas fa-laptop-code text-3xl text-[#20e3c2] mb-2"></i>
+          <span class="font-semibold">Full Stack Dev</span>
+        </div>
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fab fa-react text-3xl text-[#61dafb] mb-2"></i>
+          <span class="font-semibold">React.js</span>
+        </div>
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fab fa-node-js text-3xl text-[#1be1c8] mb-2"></i>
+          <span class="font-semibold">Node.js</span>
+        </div>
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fab fa-js-square text-3xl text-[#f7df1e] mb-2"></i>
+          <span class="font-semibold text-gray-100">JavaScript</span>
+        </div>
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fab fa-html5 text-3xl text-orange-500 mb-2"></i>
+          <span class="font-semibold">HTML5</span>
+        </div>
+        <div class="glass flex flex-col items-center py-4 hover-3d transition">
+          <i class="fab fa-css3-alt text-3xl text-blue-400 mb-2"></i>
+          <span class="font-semibold">CSS3 & Tailwind</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap justify-start gap-4 mt-8">
+        <span class="px-4 py-2 rounded-xl bg-[#161c2e] text-[#1be1c8] text-xs font-bold shadow">Teamwork</span>
+        <span class="px-4 py-2 rounded-xl bg-[#161c2e] text-[#1be1c8] text-xs font-bold shadow">Time Mgmt</span>
+        <span class="px-4 py-2 rounded-xl bg-[#161c2e] text-[#1be1c8] text-xs font-bold shadow">Effective Communication</span>
+        <span class="px-4 py-2 rounded-xl bg-[#161c2e] text-[#1be1c8] text-xs font-bold shadow">SEO & Digital Marketing</span>
+      </div>
+      <div class="glass mt-10 p-6">
+        <canvas id="skillsChart" height="140"></canvas>
+      </div>
+    </section>
+    <section id="experience" class="py-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold animated-accent mb-6">Work Experience</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-6 hover-3d transition">
+          <h3 class="text-xl font-bold text-[#1be1c8] mb-2">Freelance Digital Marketer</h3>
+          <div class="text-gray-400 text-xs mb-3">2023 - Present</div>
+          <ul class="list-disc ml-6 text-gray-200 space-y-2">
+            <li>Managed content creation, SEO copywriting, and analytics reporting.</li>
+            <li>Helped projects grow in website users and brand awareness via digital campaigns.</li>
+            <li>Worked closely with developers on strategies and outreach.</li>
+          </ul>
+        </div>
+        <div class="glass p-6 hover-3d transition">
+          <h3 class="text-xl font-bold text-[#1be1c8] mb-2">Collaborative Projects</h3>
+          <div class="text-gray-400 text-xs mb-3">2022 - 2023</div>
+          <ul class="list-disc ml-6 text-gray-200 space-y-2">
+            <li>Developed web applications using JavaScript, React, Node.js.</li>
+            <li>Improved team coordination and timely deliveries.</li>
+            <li>Enhanced communication for effective problem-solving.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="education" class="py-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold animated-accent mb-6">Education</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-6 hover-3d transition">
+          <h3 class="font-bold text-[#2196f3]">Polytechnic (Diploma)</h3>
+          <div class="text-gray-300 mb-1 mt-1">Ghani Khan Choudhury Institute of Engineering And Technology, Malda, West Bengal</div>
+          <div class="text-xs text-gray-400 mb-2">2024 - Present, Semester 2</div>
+          <div class="text-gray-200 text-sm">Pursuing Diploma in Computer Science & Technology. Active in coding and tech learning.</div>
+        </div>
+        <div class="glass p-6 hover-3d transition">
+          <h3 class="font-bold text-[#2196f3]">Secondary Education (10th Standard)</h3>
+          <div class="text-gray-300 mb-1 mt-1">Old Malda Kalachand High School (H.S), West Bengal</div>
+          <div class="text-xs text-gray-400 mb-2">2023</div>
+          <div class="text-gray-200 text-sm">Achieved distinction with major focus on Technology and science.</div>
+        </div>
+      </div>
+    </section>
+    <section id="projects" class="py-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold animated-accent mb-6">Projects</h2>
+      <div class="grid md:grid-cols-3 gap-7">
+        <div class="glass p-5 hover-3d transition relative group">
+          <div class="h-36 bg-gradient-to-tr from-[#222941] to-[#1be1c8]/30 rounded-xl mb-3 flex items-center justify-center">
+            <i class="fas fa-blog fa-3x text-[#20e3c2]"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Responsive Blog Platform</h3>
+          <div class="text-xs text-gray-400 mb-1">React, Node.js, MongoDB</div>
+          <p class="text-gray-300 mb-2 text-sm">Created a fully responsive blog website with CRUD, dark mode, and beautiful UI.</p>
+        </div>
+        <div class="glass p-5 hover-3d transition relative group">
+          <div class="h-36 bg-gradient-to-tr from-[#222941] to-[#2196f3]/30 rounded-xl mb-3 flex items-center justify-center">
+            <i class="fas fa-user-shield fa-3x text-[#2196f3]"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">User Auth System</h3>
+          <div class="text-xs text-gray-400 mb-1">Express.js, JWT, MongoDB</div>
+          <p class="text-gray-300 mb-2 text-sm">Developed secure registration/login with JWT auth, access control, and social sign-in.</p>
+        </div>
+        <div class="glass p-5 hover-3d transition relative group">
+          <div class="h-36 bg-gradient-to-tr from-[#222941] to-[#ff00c8]/30 rounded-xl mb-3 flex items-center justify-center">
+            <i class="fas fa-search fa-3x text-[#f900c7]"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">SEO Optimizer Tool</h3>
+          <div class="text-xs text-gray-400 mb-1">JavaScript, Web APIs</div>
+          <p class="text-gray-300 mb-2 text-sm">SEO analyzer tool for digital marketing with suggestions and real-time reports.</p>
+        </div>
+      </div>
+    </section>
+    <section id="contact" class="py-8">
+      <h2 class="text-2xl md:text-3xl font-extrabold animated-accent mb-6">Contact Me</h2>
+      <div class="grid md:grid-cols-2 gap-10">
+        <div>
+          <div class="glass p-8 mb-5 shadow-lg">
+            <p class="text-base md:text-lg font-medium mb-4">Let's get in touch! Send me a message, and I'll get back to you soon.</p>
+            <div class="flex flex-col text-gray-300 mb-6 space-y-2">
+              <span><i class="fas fa-envelope text-[#1be1c8] mr-2"></i> <a href="mailto:anik999xc@gmail.com" class="__cf_email__">anik999xc@gmail.com</a></span>
+              <span><i class="fas fa-phone-alt text-[#2196f3] mr-2"></i> +91 85970 54713</span>
+              <span><i class="fas fa-map-marker-alt text-[#20e3c2] mr-2"></i> West Bengal, India</span>
+            </div>
+            <div class="flex space-x-3 mt-2">
+              <a href="#" target="_blank" class="text-2xl text-[#2196f3] hover:text-[#1be1c8]"><i class="fab fa-linkedin"></i></a>
+              <a href="#" target="_blank" class="text-2xl text-[#20e3c2] hover:text-[#2196f3]"><i class="fab fa-github"></i></a>
+              <a href="#" target="_blank" class="text-2xl text-[#ff00c8] hover:text-[#2196f3]"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+<form action="https://formspree.io/f/xanoykjy" method="POST" id="contact-form" class="w-full glass p-8 shadow-xl" autocomplete="off">
+  <div class="mb-4">
+    <label for="name" class="block text-sm mb-1 font-semibold">Name</label>
+    <input required type="text" id="name" name="name" class="w-full p-3 rounded" autocomplete="off">
+  </div>
+  <div class="mb-4">
+    <label for="email" class="block text-sm mb-1 font-semibold">Email</label>
+    <input required type="email" id="email" name="email" class="w-full p-3 rounded" autocomplete="off">
+  </div>
+  <div class="mb-4">
+    <label for="message" class="block text-sm mb-1 font-semibold">Message</label>
+    <textarea required id="message" name="message" rows="5" class="w-full p-3 rounded" autocomplete="off"></textarea>
+  </div>
+  <button type="submit" class="w-full accent-bg text-white py-3 mt-2 rounded font-bold shadow-lg hover:scale-105 transition">Send Message</button>
+  <p id="formResult" class="text-[#20e3c2] font-semibold mt-4 hidden"></p>
+</form>
+
+      </div>
+    </section>
+  </main>
+  <footer class="w-full text-center py-6 text-gray-400 text-sm bg-[#171a31] mt-12">
+    &copy; <span id="year"></span> Anik Paul | All rights reserved.
+  </footer>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const ctx = document.getElementById('skillsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: [
+          'Full Stack', 'React', 'Node.js', 'JS', 'HTML', 'CSS', 'Communication'
+        ],
+        datasets: [{
+          label: 'Skill Level',
+          data: [9, 8, 8, 8, 9, 8, 7],
+          backgroundColor: 'rgba(32,227,194,0.2)',
+          borderColor: '#20e3c2',
+          pointBackgroundColor: '#20e3c2',
+          pointBorderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        scales: {
+          r: {
+            angleLines: { display: false },
+            suggestedMin: 0,
+            suggestedMax: 10,
+            pointLabels: { color: '#fff', font: {size:15,weight:'bold'} },
+            grid: { color: '#34425b' },
+            ticks:{ color:'#20e3c2' }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+    function handleSend(e) {
+      e.preventDefault();
+      const res = document.getElementById('formResult');
+      res.textContent = 'Message sent! I will reply soon. (This is a demo form)';
+      res.classList.remove('hidden');
+      setTimeout(()=>{res.classList.add('hidden');}, 4000);
+      e.target.reset();
+    }
+  </script>
+  <% if (typeof loadingScreen !== "undefined") { %>
+    <%- loadingCss %>
+    <%- loadingScreen %>
+    <%- loadingJs %>
+    <% } %>
+</body>
+</html>
+

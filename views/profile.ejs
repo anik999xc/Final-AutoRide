@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+        <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #8B5CF6;
+            --accent-color: #EC4899;
+            --background-color: #F3F4F6;
+            --card-color: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-radius: 16px;
+            --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            position: fixed;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+            overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .profile-container {
+            width: 100%;
+            height: auto;
+            min-height: 100%;
+            background-color: var(--card-color);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .cover-image-container {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            overflow: hidden;
+        }
+        
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .profile-image-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: -65px auto 0;
+            border-radius: 50%;
+            border: 4px solid var(--card-color);
+            background-color: var(--card-color);
+            overflow: hidden;
+            z-index: 10;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .upload-icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        .upload-icon:hover, .upload-icon:active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-details {
+            padding: 25px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .detail-row {
+            margin-bottom: 20px;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .detail-value {
+            background-color: #F9FAFB;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--text-primary);
+            transition: var(--transition);
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .detail-value span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .detail-row:active .detail-value {
+            border-color: #D1D5DB;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .edit-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 80px;
+            justify-content: center;
+        }
+        
+        .edit-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
+        .edit-btn i {
+            font-size: 12px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: var(--card-color);
+            padding: 30px 25px;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            box-shadow: 0 -5px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(50px);
+            transition: all 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            position: relative;
+            padding-bottom: 12px;
+        }
+        
+        .modal-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            transition: var(--transition);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .modal-btn {
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 15px;
+            transition: var(--transition);
+            border: none;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .cancel-btn {
+            background-color: #F3F4F6;
+            color: #4B5563;
+        }
+        
+        .cancel-btn:active {
+            background-color: #E5E7EB;
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-btn:active {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button:active {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.98);
+        }
+        
+        #profileImagePlaceholder, #coverImagePlaceholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .locked-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+            gap: 6px;
+        }
+        
+        .locked-indicator i {
+            font-size: 16px;
+        }
+        
+        .cannot-change-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            margin-left: 2px;
+        }
+        
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .profile-container {
+                min-height: 100vh;
+                height: 100%;
+            }
+            
+            .cover-image-container {
+                height: 160px;
+            }
+            
+            .user-details {
+                padding: 20px 16px;
+            }
+            
+            .detail-label {
+                font-size: 13px;
+            }
+            
+            .detail-value {
+                padding: 14px;
+            }
+            
+            .edit-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                min-width: 70px;
+            }
+            
+            .modal-content {
+                padding: 25px 20px;
+            }
+            
+            .modal-btn {
+                padding: 12px 16px;
+            }
+        }
+        
+        /* Fix for iOS safari viewport height */
+        @supports (-webkit-touch-callout: none) {
+            body, html {
+                height: -webkit-fill-available;
+            }
+            
+            .profile-container {
+                min-height: -webkit-fill-available;
+            }
+        }
+        
+        /* Bottom safe area for newer iPhones */
+        @supports (padding: max(0px)) {
+            .modal-content {
+                padding-bottom: max(25px, env(safe-area-inset-bottom));
+            }
+            
+            .user-details {
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+        }
+        
+        /* Add active states for touch devices */
+        @media (hover: none) {
+            .edit-btn:hover {
+                transform: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .profile-image-container:hover .profile-image,
+            .cover-image-container:hover .cover-image {
+                transform: none;
+            }
+            
+            .upload-icon:hover {
+                transform: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .cover-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f0f2f5;
+        }
+        .cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-img-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin-top: -75px;
+            margin-left: 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid white;
+            background-color: #e4e6eb;
+        }
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #e4e6eb;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .disabled {
+            background-color: #f0f2f5;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .upload-progress {
+            display: none;
+            margin-top: 10px;
+        }
+        .hidden-input {
+            display: none;
+        }
+    </style>
+</head>
+    <div class="profile-container">
+        <!-- Back button -->
+        <a href="/home" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+<body class="bg-gray-100">
+    <div class="profile-container bg-white shadow-md rounded-lg my-5 overflow-hidden">
+        <!-- Cover Photo Section -->
+        <div class="cover-container">
+            <img id="coverImg" class="cover-img" src="#" alt="Cover Photo" style="display: none;">
+            <div id="coverPlaceholder" class="w-full h-full flex items-center justify-center">
+                <span class="text-gray-500">Cover Photo</span>
+            </div>
+            <label for="coverImageInput" class="upload-btn" title="Change Cover Photo">
+                <i class="fas fa-camera"></i>
+                <input type="file" id="coverImageInput" class="hidden-input" accept="image/jpeg">
+            </label>
+        </div>
+
+        <!-- Profile Photo Section -->
+        <div class="profile-img-container">
+            <img id="profileImg" class="profile-img" src="#" alt="Profile Photo" style="display: none;">
+            <div id="profilePlaceholder" class="w-full h-full flex items-center justify-center">
+                <span class="text-gray-500">Profile Photo</span>
+            </div>
+            <label for="profileImageInput" class="upload-btn" title="Change Profile Photo">
+                <i class="fas fa-camera"></i>
+                <input type="file" id="profileImageInput" class="hidden-input" accept="image/jpeg">
+            </label>
+        </div>
+
+        <!-- Profile Information Section -->
+        <div class="p-5 mt-10">
+            <h2 class="text-2xl font-bold mb-5">Profile Information</h2>
+            
+        <div class="user-details">
+            <!-- Name Field -->
+            <div class="detail-row">
+                <div class="detail-label">Name</div>
+                <div class="detail-value">
+                    <span id="userName">Full Name</span>
+                    <button class="edit-btn" onclick="openEditModal('userName', 'Name')">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Address Field -->
+            <div class="detail-row">
+                <div class="detail-label">Address</div>
+                <div class="detail-value">
+                    <span id="useraddress">Address</span>
+                    <button class="edit-btn" onclick="openEditModal('address', 'Address')">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Emergency Number Field -->
+            <div class="detail-row">
+                <div class="detail-label">Emergency Number</div>
+                <div class="detail-value">
+                    <span id="emergency_number">Emergency Number</span>
+                    <button class="edit-btn" onclick="openEditModal('emergency', 'Emergency Contact')">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email Field (Non-editable) -->
+            <div class="detail-row" style="margin-bottom: 0;">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">
+                    <span id="email">user@example.com</span>
+                    <div class="locked-indicator">
+                        <i class="fas fa-lock"></i>
+                        <span>Locked</span>
+                    </div>
+                </div>
+                <div class="cannot-change-text">You can't change your Gmail</div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-title" id="modalTitle">Edit Field</div>
+                <input type="text" id="modalInput" class="modal-input" placeholder="Enter new value">
+                <input type="hidden" id="modalFieldType">
+                <div class="modal-actions">
+                    <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
+                    <button class="modal-btn save-btn" onclick="saveChanges()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // ১. সার্ভার থেকে আসা এনভায়রনমেন্ট ভেরিয়েবল গ্রহণ (env থেকে)
+    const { 
+        SUPABASE_URL, 
+        SUPABASE_KEY 
+    } = <%- JSON.stringify(env) %>;
+
+    let supabaseClient;
+    let currentAuthKey;
+    let currentField;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        // ২. Supabase client তৈরি (সার্ভার থেকে আসা কী ব্যবহার করে)
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Local storage থেকে auth key নেওয়া
+        currentAuthKey = localStorage.getItem('authKey');
+        
+        if (currentAuthKey) {
+            // ইউজারের তথ্য লোড করা
+            await loadUserData();
+            
+            // ইমেজ হ্যান্ডলার সেটআপ (যদি থাকে)
+            if (typeof setupImageHandlers === 'function') {
+                setupImageHandlers();
+            }
+        } else {
+            // যদি লগইন না থাকে তবে লগইন পেজে পাঠিয়ে দেওয়া
+            window.location.href = '/login';
+        }
+        
+        // iOS এবং মোডাল ফিক্স ফাংশন কল
+        fixIOSViewportHeight();
+        setupModalTouchHandling();
+    });
+
+    // ইউজারের তথ্য লোড করার ফাংশন
+    async function loadUserData() {
+        try {
+            // ৩. ডাটাবেস থেকে তথ্য আনা (আপনার নতুন কলাম অনুযায়ী)
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('name, address, emergency_number, email')
+                .eq('auth_key', currentAuthKey)
+                .single();
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return;
+            }
+            
+            // UI আপডেট করা
+            if (data) {
+                if (data.name) document.getElementById('userName').textContent = data.name;
+                if (data.address) document.getElementById('useraddress').textContent = data.address;
+                if (data.emergency_number) document.getElementById('emergency_number').textContent = data.emergency_number;
+                if (data.email) document.getElementById('email').textContent = data.email;
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // iOS ভিউপোর্ট ফিক্স
+    function fixIOSViewportHeight() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+            window.addEventListener('resize', () => {
+                document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+            });
+        }
+    }
+    
+    // মোডাল টাচ হ্যান্ডলিং
+    function setupModalTouchHandling() {
+        const modal = document.getElementById('editModal');
+        if (!modal) return;
+        
+        const modalContent = modal.querySelector('.modal-content');
+        
+        if (modalContent) {
+            modalContent.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            });
+        }
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                if (typeof closeModal === 'function') closeModal();
+            }
+        });
+    }
+</script>
+
+
+            <!-- Error Messages -->
+            <div id="profileErrorMsg" class="error-message">
+                Error: Only JPG files less than 5MB are allowed.
+            </div>
+            <div id="coverErrorMsg" class="error-message">
+                Error: Only JPG files less than 5MB are allowed.
+            </div>
+
+            <!-- Upload Progress -->
+            <div id="uploadProgress" class="upload-progress bg-gray-200 rounded-full h-2.5 mt-3">
+                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <div id="uploadStatus" class="text-sm text-gray-600 mt-1 upload-progress">
+                Uploading image...
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const profileImageInput = document.getElementById('profileImageInput');
+        const coverImageInput = document.getElementById('coverImageInput');
+        const profileImg = document.getElementById('profileImg');
+        const coverImg = document.getElementById('coverImg');
+        const profilePlaceholder = document.getElementById('profilePlaceholder');
+        const coverPlaceholder = document.getElementById('coverPlaceholder');
+        const profileErrorMsg = document.getElementById('profileErrorMsg');
+        const coverErrorMsg = document.getElementById('coverErrorMsg');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadStatus = document.getElementById('uploadStatus');
+
+        // Get auth key from local storage
+        const getAuthKey = () => {
+            const authKey = localStorage.getItem('authKey');
+            if (!authKey) {
+                console.error('Auth key not found in local storage');
+                return null;
+            }
+            return authKey;
+        };
+
+        // Load images on page load
+        const loadImages = () => {
+            const authKey = getAuthKey();
+            if (!authKey) return;
+
+            // Check if profile image exists
+            const profileImageUrl = `/uploads/profile/${authKey}-profile.jpg`;
+            fetch(profileImageUrl, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        profileImg.src = profileImageUrl + '?t=' + new Date().getTime();
+                        profileImg.style.display = 'block';
+                        profilePlaceholder.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error checking profile image:', error));
+
+            // Check if cover image exists
+            const coverImageUrl = `/uploads/cover/${authKey}-cover.jpg`;
+            fetch(coverImageUrl, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        coverImg.src = coverImageUrl + '?t=' + new Date().getTime();
+                        coverImg.style.display = 'block';
+                        coverPlaceholder.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error checking cover image:', error));
+        };
+
+        // Call loadImages on page load
+        loadImages();
+
+        // Validate file before upload
+        const validateFile = (file, errorElement) => {
+            errorElement.style.display = 'none';
+            const fileName = file.name.toLowerCase();
+            const validExt = ['.jpg', '.jpeg'];
+            const fileExt = fileName.substring(fileName.lastIndexOf('.'));
+
+            if (!validExt.includes(fileExt)) {
+                errorElement.textContent = 'Error: Only JPG/JPEG files are allowed.';
+                errorElement.style.display = 'block';
+                return false;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                errorElement.textContent = 'Error: Maximum image size is 5MB.';
+                errorElement.style.display = 'block';
+                return false;
+            }
+
+            return true;
+        };
+
+        // Upload file
+        const uploadFile = (file, fileType) => {
+            const authKey = getAuthKey();
+            if (!authKey) {
+                alert('Authentication error. Please log in again.');
+                return;
+            }
+
+            uploadProgress.style.display = 'block';
+            uploadStatus.style.display = 'block';
+            uploadStatus.textContent = 'Uploading image...';
+
+            const formData = new FormData();
+            formData.append(fileType, file);
+            formData.append('authKey', authKey);
+
+            fetch('/upload/profile', {
+  method: 'POST',
+  body: formData,
+  headers: {
+    'authkey': authKey  // Send authKey in header instead of form body
+  }
+})
+
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error');
+                }
+                return response.json();
+            })
+            .then(data => {
+                uploadStatus.textContent = 'Upload successful!';
+                setTimeout(function() {
+                    loadImages();
+                    uploadProgress.style.display = 'none';
+                    uploadStatus.style.display = 'none';
+                }, 1000);
+            })
+            .catch(error => {
+                uploadStatus.textContent = 'Upload failed: ' + error.message;
+                setTimeout(function() {
+                    uploadProgress.style.display = 'none';
+                    uploadStatus.style.display = 'none';
+                }, 3000);
+            });
+        };
+
+        // Handle profile image change
+        profileImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (validateFile(file, profileErrorMsg)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImg.src = e.target.result;
+                    profileImg.style.display = 'block';
+                    profilePlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                uploadFile(file, 'profileImage');
+            }
+        });
+
+        // Handle cover image change
+        coverImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (validateFile(file, coverErrorMsg)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    coverImg.src = e.target.result;
+                    coverImg.style.display = 'block';
+                    coverPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                uploadFile(file, 'coverImage');
+            }
+        });
+    });
+            function openEditModal(field, title) {
+            currentField = field;
+            const modal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalInput = document.getElementById('modalInput');
+            
+            modalTitle.textContent = `Edit ${title}`;
+            
+            // Set current value in input
+            if (field === 'userName') {
+                modalInput.value = document.getElementById('userName').textContent;
+            } else if (field === 'address') {
+                modalInput.value = document.getElementById('useraddress').textContent;
+            } else if (field === 'emergency') {
+                modalInput.value = document.getElementById('emergency_number').textContent;
+            }
+            
+            // Show modal with animation
+            modal.classList.add('active');
+            setTimeout(() => {
+                modalInput.focus();
+            }, 300);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('active');
+        }
+
+        async function saveChanges() {
+            const modalInput = document.getElementById('modalInput');
+            const newValue = modalInput.value.trim();
+            
+            if (!newValue) return;
+            
+            try {
+                let updateData = {};
+                let elementId;
+                
+                // Determine which field to update
+                if (currentField === 'userName') {
+                    updateData = { name: newValue };
+                    elementId = 'userName';
+                } else if (currentField === 'address') {
+                    updateData = { address: newValue };
+                    elementId = 'useraddress';
+                } else if (currentField === 'emergency') {
+                    updateData = { emergency_number: newValue };
+                    elementId = 'emergency_number';
+                }
+                
+                // Update in Supabase
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update(updateData)
+                    .eq('auth_key', currentAuthKey);
+                
+                if (error) {
+                    console.error('Error updating data:', error);
+                    return;
+                }
+                
+                // Update UI
+                document.getElementById(elementId).textContent = newValue;
+                
+                // Close modal
+                closeModal();
+                
+                // Show success feedback
+                showFeedback('Successfully updated!');
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function showFeedback(message) {
+            // Create feedback element
+            const feedback = document.createElement('div');
+            feedback.style.position = 'fixed';
+            feedback.style.bottom = '20px';
+            feedback.style.left = '50%';
+            feedback.style.transform = 'translateX(-50%)';
+            feedback.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+            feedback.style.color = 'white';
+            feedback.style.padding = '12px 24px';
+            feedback.style.borderRadius = '8px';
+            feedback.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            feedback.style.zIndex = '9999';
+            feedback.style.fontWeight = '500';
+            feedback.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${message}`;
+            
+            // Add to body
+            document.body.appendChild(feedback);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+                feedback.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 500);
+            }, 3000);
+        }
+</script>
+
+</body>
+</html>

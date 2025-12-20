@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chatbot</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#007bff" />
+
+  <!-- Service Worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => {
+          console.log('Service Worker registered successfully.');
+        })
+        .catch((err) => {
+          console.error('Service Worker registration failed:', err);
+        });
+    }
+  </script>
+
+  <style>
+    /* Reset some default styles to ensure full-screen */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Prevent scrollbars */
+    }
+
+    /* Style the iframe to take up the entire screen */
+    #JotFormIFrame-0196de48239e7547a73dad213358e5d227b0 {
+      position: fixed; /* Important for full-screen */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      z-index: 1; /* Ensure it's above other elements if needed */
+    }
+
+    /* Style for the back button */
+    #backButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2; /* Ensure it's above the iframe */
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none; /* Initially hidden */
+    }
+  </style>
+</head>
+<body>
+
+  <button id="backButton" onclick="goBack()">👈 Back</button>
+
+  <iframe id="JotFormIFrame-0196de48239e7547a73dad213358e5d227b0"
+    title="Elena: Customer Service Agent" onload="window.parent.scrollTo(0,0)"
+    allowtransparency="true" allow="geolocation; microphone; camera; fullscreen"
+    src="https://agent.jotform.com/0196de48239e7547a73dad213358e5d227b0?embedMode=iframe&background=1&shadow=1"
+    frameborder="0"
+    scrolling="no">
+  </iframe>
+  <script src='https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js'></script>
+  <script>
+    window.jotformEmbedHandler("iframe[id='JotFormIFrame-0196de48239e7547a73dad213358e5d227b0']",
+      "https://www.jotform.com")
+
+    // Function to go back in history
+    function goBack() {
+      window.history.back();
+    }
+
+    // Show the back button if there's history to go back to
+    if (window.history.length > 1) {
+      document.getElementById("backButton").style.display = "block";
+    }
+  </script>
+  <% if (typeof loadingScreen !== "undefined") { %>
+    <%- loadingCss %>
+    <%- loadingScreen %>
+    <%- loadingJs %>
+  <% } %>
+</body>
+</html>

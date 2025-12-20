@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "url": "https://autoride.space",
+    "logo": "https://autoride.space/icons/icon-192x192.png"
+  }
+  </script>
+  
+  <title>AutoRide - The Premium Ride-Sharing Experience in West Bengal</title>
+  
+  
+  <link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#007bff" />
+
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => {
+        console.log('Service Worker registered successfully.');
+      })
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err);
+      });
+  }
+</script>
+
+  
+  
+  
+<meta name="description" content="Book motorcycle rides instantly with AutoRide, the top ride-sharing service in West Bengal. Safe, affordable transportation at your fingertips.">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="AutoRide - Your premium ride-sharing service. Choose your journey as a passenger or driver.">
+    <meta name="theme-color" content="#2980B9">
+    <title>AutoRide | Start Your Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/select_one.css">
+    <link rel="shortcut icon" href="/img/logo.jpg" type="image/x-icon">
+    <link rel="Website Icon" type="png"
+    href="/img/no_name_logo.png">
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-container">
+                <img src="/img/logo.png" alt="AutoRide Logo" class="logo">
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="card-content">
+                    <div class="welcome-section">
+                        <h1 class="app-title">Welcome to <span class="highlight">AutoRide</span></h1>
+                        <p class="app-subtitle">The premium ride-sharing experience</p>
+                    </div>
+
+<div class="visual-section">
+  <div class="video-container">
+    <video autoplay loop playsinline class="feature-video">
+      <source src="/video/add.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="image-decoration"></div>
+  </div>
+  <div class="accent-shape accent-shape-1"></div>
+  <div class="accent-shape accent-shape-2"></div>
+</div>
+
+<style>
+  .video-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px; /* optional, if you want rounded corners */
+  }
+
+  .feature-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none; /* disables touch/click interaction */
+  }
+</style>
+
+<div style="text-align: center;">
+  <a href="/app/AutoRide.apk" download class="download-btn">
+    Download the App
+  </a>
+</div>
+
+<style>
+  .download-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+
+  .download-btn:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+
+                    
+                    <div class="action-section">
+                        <h2 class="section-title">Choose your role</h2>
+                        
+                        
+                        <div class="button-group">
+                            <button class="action-button passenger-button" onclick="redirectToLogin('passenger')">
+                                <i class="button-icon fas fa-user"></i>
+                                <div class="button-content">
+                                    <span class="button-title">Passenger</span>
+                                    <span class="button-description">Book a ride now</span>
+                                </div>
+                                <i class="button-arrow fas fa-arrow-right"></i>
+                            </button>
+                            
+                            <div class="button-separator">
+                                <div class="separator-line"></div>
+                                <span class="separator-text">or</span>
+                                <div class="separator-line"></div>
+                            </div>
+                           <a href="/driver_home">
+                            <button class="action-button captain-button">
+                                <i class="button-icon fas fa-motorcycle"></i>
+                                <div class="button-content">
+                                    <span class="button-title">Captain</span>
+                                    <span class="button-description">Start earning today</span>
+                                </div>
+                                <i class="button-arrow fas fa-arrow-right"></i>
+                            </button>
+                          </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <div class="footer-row">
+                <div class="footer-links">
+                    <a href="/about" class="footer-link">About</a>
+                    <a href="/careers" class="footer-link">Careers</a>
+                    <a href="/terms" class="footer-link">Terms</a>
+                    <a href="/privacy" class="footer-link">Privacy</a>
+                </div>
+                <div>
+                  <button 
+  onclick="location.href='/developer'" 
+  style="background: linear-gradient(90deg, #00c9ff, #92fe9d); border: none; color: white; padding: 15px 40px; text-align: center; text-decoration: none; font-size: 20px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: background 0.3s, transform 0.3s;"
+  onmouseover="this.style.transform='scale(1.05)';" 
+  onmouseout="this.style.transform='scale(1)';"
+>
+                      View Portfolio
+</button>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/share/1FgXamPcHk/" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://x.com/paul_karti46056" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/__kartik_pal__?igsh=MXBzcWZlazRhamlhYQ==" class="social-link"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-row">
+                <p class="copyright">&copy; 2025 AutoRide. All rights reserved.</p>
+            </div>
+        </footer>
+        
+        <div class="background-elements">
+            <div class="bg-shape bg-shape-1"></div>
+            <div class="bg-shape bg-shape-2"></div>
+            <div class="bg-shape bg-shape-3"></div>
+        </div>
+    </div>
+    
+    <script src="/js/select_one.js"></script>
+    <script>
+      
+(function() {
+    const authKey = localStorage.getItem('authKey');
+    const homePagePath = '/home'; // আপনার হোম পেজের পাথ এখানে দিন (যেমন: '/home.html')
+    const currentPage = window.location.pathname;
+
+    // যদি authKey থাকে এবং ব্যবহারকারী হোম পেজে না থাকে,
+    // তাহলে হোম পেজে রিডাইরেক্ট করুন
+    if (authKey && currentPage !== homePagePath) {
+        window.location.href = homePagePath;
+    }
+})();
+    </script>
+    <% if (typeof loadingScreen !== "undefined") { %>
+    <%- loadingCss %>
+    <%- loadingScreen %>
+    <%- loadingJs %>
+    <% } %>
+    <style>
+      /* ================= VARIABLES & RESETS ================= */
+:root {
+    /* New Color Theme - Modern Blue & Teal Gradient */
+    --primary-color: #2980B9;
+    --primary-dark: #1D6FA5;
+    --primary-light: #3498DB;
+    --secondary-color: #16A085;
+    --secondary-dark: #0E8C73;
+    --secondary-light: #1ABC9C;
+    --accent-color: #F39C12;
+    --surface-color: #FFFFFF;
+    --background-main: #F8FAFC;
+    --text-primary: #2C3E50;
+    --text-secondary: #34495E;
+    --text-tertiary: #7F8C8D;
+    --text-on-primary: #FFFFFF;
+    --text-on-secondary: #FFFFFF;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.2);
+    --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 9999px;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-medium: 0.25s ease-in-out;
+    --transition-slow: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-bounce: 0.5s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+    
+    /* Fonts */
+    --font-main: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-xxl: 1.5rem;
+    --font-size-xxxl: 2rem;
+    --font-size-huge: 2.5rem;
+    
+    /* Z-index layers */
+    --z-background: -10;
+    --z-normal: 1;
+    --z-elevated: 10;
+    --z-modal: 100;
+    --z-toast: 1000;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--background-main);
+    color: var(--text-primary);
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #EBF5FB 0%, #E8F8F5 100%);
+}
+
+button, a {
+    font-family: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ================= LAYOUT COMPONENTS ================= */
+.app-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-header {
+    padding: var(--space-md) var(--space-xl);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: var(--z-elevated);
+}
+
+.logo-container {
+    width: 140px;
+}
+
+.logo {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-md);
+    position: relative;
+    z-index: var(--z-normal);
+}
+
+.card {
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--surface-color);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    transform: translateY(0);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.card-content {
+    padding: var(--space-xl);
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.app-title {
+    font-size: var(--font-size-huge);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-xs);
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.highlight {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    position: relative;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: var(--radius-full);
+    opacity: 0.6;
+}
+
+.app-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+.visual-section {
+    margin: var(--space-xl) 0;
+    position: relative;
+}
+
+.image-container {
+    width: 75%;
+    margin: 0 auto;
+    position: relative;
+    z-index: var(--z-normal);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.feature-image {
+    width: 100%;
+    display: block;
+    transform: scale(1);
+    transition: transform var(--transition-slow);
+}
+
+.image-container:hover .feature-image {
+    transform: scale(1.04);
+}
+
+.image-decoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+    z-index: 1;
+}
+
+.accent-shape {
+    position: absolute;
+    border-radius: var(--radius-full);
+    z-index: -1;
+}
+
+.accent-shape-1 {
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    top: -60px;
+    right: -30px;
+    opacity: 0.1;
+    filter: blur(30px);
+}
+
+.accent-shape-2 {
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+    bottom: -80px;
+    left: -40px;
+    opacity: 0.1;
+    filter: blur(40px);
+}
+
+.action-section {
+    margin-top: var(--space-xxl);
+}
+
+.section-title {
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.button-separator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-xs) 0;
+}
+
+.separator-line {
+    flex: 1;
+    height: 1px;
+    background-color: rgba(127, 140, 141, 0.2);
+}
+
+.separator-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.action-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+    color: var(--text-on-primary);
+    position: relative;
+    overflow: hidden;
+    z-index: var(--z-normal);
+}
+
+.action-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+    z-index: -1;
+}
+
+.action-button:hover::before {
+    opacity: 1;
+}
+
+.passenger-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    box-shadow: 0 4px 12px rgba(41, 128, 185, 0.3);
+}
+
+.passenger-button:hover {
+    box-shadow: 0 6px 16px rgba(41, 128, 185, 0.4);
+    transform: translateY(-2px);
+}
+
+.captain-button {
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+    box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3);
+}
+
+.captain-button:hover {
+    box-shadow: 0 6px 16px rgba(22, 160, 133, 0.4);
+    transform: translateY(-2px);
+}
+
+.button-icon {
+    font-size: var(--font-size-xl);
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+}
+
+.button-content {
+    flex: 1;
+    text-align: left;
+}
+
+.button-title {
+    display: block;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.button-description {
+    display: block;
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+}
+
+.button-arrow {
+    font-size: var(--font-size-md);
+    transition: transform var(--transition-medium);
+}
+
+.action-button:hover .button-arrow {
+    transform: translateX(4px);
+}
+
+.action-button:active {
+    transform: translateY(1px);
+}
+
+/* ================= FOOTER ================= */
+.app-footer {
+    padding: var(--space-lg) var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    z-index: var(--z-normal);
+}
+
+.footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.footer-links {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.footer-link {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+    color: var(--primary-color);
+}
+
+.social-links {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.social-link {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: all var(--transition-medium);
+}
+
+.social-link:hover {
+    color: var(--text-on-primary);
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.copyright {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+/* ================= BACKGROUND ELEMENTS ================= */
+.background-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-background);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+}
+
+.bg-shape-1 {
+    top: -10%;
+    right: -5%;
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0) 70%);
+}
+
+.bg-shape-2 {
+    bottom: -15%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(22, 160, 133, 0.05) 0%, rgba(22, 160, 133, 0) 70%);
+}
+
+.bg-shape-3 {
+    top: 40%;
+    left: 45%;
+    width: 25vw;
+    height: 25vw;
+    background: radial-gradient(circle, rgba(243, 156, 18, 0.03) 0%, rgba(243, 156, 18, 0) 70%);
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+@media (max-width: 768px) {
+    :root {
+        --font-size-huge: 2.2rem;
+    }
+    
+    .main-content {
+        padding: var(--space-md) var(--space-md);
+    }
+    
+    .card-content {
+        padding: var(--space-lg);
+    }
+    
+    .action-button {
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --font-size-huge: 1.8rem;
+        --font-size-xxxl: 1.7rem;
+        --font-size-xxl: 1.4rem;
+        --font-size-xl: 1.1rem;
+    }
+    
+    .app-header {
+        padding: var(--space-md);
+    }
+    
+    .logo-container {
+        width: 120px;
+    }
+    
+    .card-content {
+        padding: var(--space-lg) var(--space-md);
+    }
+    
+    .visual-section {
+        margin: var(--space-lg) 0;
+    }
+    
+    .image-container {
+        width: 85%;
+    }
+    
+    .action-section {
+        margin-top: var(--space-xl);
+    }
+    
+    .app-footer {
+        padding: var(--space-md);
+    }
+    
+    .footer-row {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-md);
+    }
+    
+    .footer-links {
+        gap: var(--space-md);
+    }
+}
+
+@media (max-height: 700px) {
+    .card {
+        margin: var(--space-md) 0;
+    }
+    
+    .welcome-section {
+        margin-bottom: var(--space-md);
+    }
+    
+    .visual-section {
+        margin: var(--space-md) 0;
+    }
+    
+    .image-container {
+        width: 60%;
+    }
+    
+    .action-section {
+        margin-top: var(--space-lg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ================= PRINT STYLES ================= */
+@media print {
+    .app-container {
+        display: block;
+        height: auto;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .action-button {
+        border: 1px solid #000;
+        background: #fff !important;
+        color: #000 !important;
+    }
+    
+    .background-elements,
+    .accent-shape {
+        display: none;
+    }
+}
+
+    </style>
+</body>
+</html>

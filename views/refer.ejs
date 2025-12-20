@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refer & Earn - Share and Get Rewards</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .gradient-bg {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .referral-code {
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #4338ca;
+        }
+        .social-btn {
+            transition: all 0.2s ease;
+        }
+        .social-btn:hover {
+            transform: translateY(-3px);
+        }
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        .step-card:hover {
+            transform: scale(1.02);
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -70px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confetti 5s ease-in-out infinite;
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+<nav class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <!-- Back Button -->
+                <a href="javascript:history.back()" class="mr-4 inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+            </div>
+            <div class="flex items-center">
+                <button class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-user mr-2"></i> My Account
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+
+
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white py-12 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">Refer Friends, Earn Rewards</h1>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto opacity-90">Share the app with friends and you'll both receive rewards when they sign up and take their first ride!</p>
+                <div class="mt-8 pulse">
+                    <span class="inline-block bg-white text-indigo-600 text-lg font-bold py-2 px-6 rounded-full">
+                        Earn up to $50 for each referral!
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Referral Code Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Your Referral Code</h2>
+                <p class="text-gray-600 mt-2">Share this code with friends or use the options below</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="bg-gray-100 px-6 py-3 rounded-lg referral-code text-xl text-center w-full md:w-auto">
+                    RIDE2023XYZ
+                </div>
+                <button id="copyBtn" class="copy-btn w-full md:w-auto px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium flex items-center justify-center">
+                    <i class="far fa-copy mr-2"></i> Copy Code
+                </button>
+            </div>
+        </div>
+        
+        <!-- Share Options -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Share with Friends</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button class="social-btn bg-blue-600 text-white rounded-lg py-3 px-4 flex items-center justify-center">
+                    <i class="fab fa-facebook-f mr-2"></i> Facebook
+                </button>
+                <button class="social-btn bg-blue-400 text-white rounded-lg py-3 px-4 flex items-center justify-center">
+                    <i class="fab fa-twitter mr-2"></i> Twitter
+                </button>
+                <button class="social-btn bg-green-500 text-white rounded-lg py-3 px-4 flex items-center justify-center">
+                    <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+                </button>
+                <button class="social-btn bg-red-500 text-white rounded-lg py-3 px-4 flex items-center justify-center">
+                    <i class="far fa-envelope mr-2"></i> Email
+                </button>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Or share via link</h3>
+                <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+                    <input type="text" value="https://rideshare.app/refer?code=RIDE2023XYZ" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" readonly>
+                    <button id="copyLinkBtn" class="copy-btn w-full md:w-auto px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium flex items-center justify-center">
+                        <i class="far fa-copy mr-2"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-8">How It Works</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="step-card bg-white rounded-xl shadow-md p-6 text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-share-alt text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">1. Share Your Code</h3>
+                    <p class="text-gray-600">Share your unique referral code with friends and family through social media, email, or text.</p>
+                </div>
+                
+                <div class="step-card bg-white rounded-xl shadow-md p-6 text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">2. Friends Sign Up</h3>
+                    <p class="text-gray-600">Your friends download the app and enter your referral code during registration.</p>
+                </div>
+                
+                <div class="step-card bg-white rounded-xl shadow-md p-6 text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-gift text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">3. Both Get Rewards</h3>
+                    <p class="text-gray-600">Once they take their first ride, you both receive reward credits automatically!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rewards Tracker -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Your Referral Stats</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Total Referrals</h3>
+                    <p class="text-3xl font-bold text-indigo-600">12</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Rewards Earned</h3>
+                    <p class="text-3xl font-bold text-indigo-600">$120</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Pending Invites</h3>
+                    <p class="text-3xl font-bold text-indigo-600">5</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Section -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Frequently Asked Questions</h2>
+            
+            <div class="space-y-4">
+                <div class="border-b border-gray-200 pb-4">
+                    <button class="flex justify-between items-center w-full text-left font-medium text-lg text-gray-800 focus:outline-none">
+                        <span>How much can I earn per referral?</span>
+                        <i class="fas fa-chevron-down text-indigo-600"></i>
+                    </button>
+                    <div class="mt-2 text-gray-600">
+                        You can earn up to $50 for each friend who signs up and completes their first ride. Your friend will also receive a $10 credit.
+                    </div>
+                </div>
+                
+                <div class="border-b border-gray-200 pb-4">
+                    <button class="flex justify-between items-center w-full text-left font-medium text-lg text-gray-800 focus:outline-none">
+                        <span>When will I receive my reward?</span>
+                        <i class="fas fa-chevron-down text-indigo-600"></i>
+                    </button>
+                    <div class="mt-2 text-gray-600">
+                        Rewards are credited to your account automatically within 24 hours after your friend completes their first ride.
+                    </div>
+                </div>
+                
+                <div class="border-b border-gray-200 pb-4">
+                    <button class="flex justify-between items-center w-full text-left font-medium text-lg text-gray-800 focus:outline-none">
+                        <span>Is there a limit to how many people I can refer?</span>
+                        <i class="fas fa-chevron-down text-indigo-600"></i>
+                    </button>
+                    <div class="mt-2 text-gray-600">
+                        No, there's no limit! The more friends you refer, the more rewards you can earn.
+                    </div>
+                </div>
+                
+                <div class="pb-2">
+                    <button class="flex justify-between items-center w-full text-left font-medium text-lg text-gray-800 focus:outline-none">
+                        <span>How long is my referral code valid?</span>
+                        <i class="fas fa-chevron-down text-indigo-600"></i>
+                    </button>
+                    <div class="mt-2 text-gray-600">
+                        Your referral code is valid indefinitely. There's no expiration date, so you can share it anytime.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="gradient-bg rounded-xl shadow-md p-8 text-center text-white">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">Start Sharing Today!</h2>
+            <p class="text-lg mb-6 max-w-2xl mx-auto">The more you share, the more you earn. Get started now and watch your rewards grow!</p>
+            <button class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300">
+                Share Your Code
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">AutoRide</h3>
+                    <p class="text-gray-400">Making transportation affordable, convenient, and efficient for everyone.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="/about" class="hover:text-white transition duration-300">About</a></li>
+                        <li><a href="/careers" class="hover:text-white transition duration-300">Careers</a></li>
+                        <li><a href="/privacy" class="hover:text-white transition duration-300">Privacy</a></li>
+                        <li><a href="/developer" class="hover:text-white transition duration-300">Developer</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 RideShare. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Copy referral code functionality
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const text = 'RIDE2023XYZ';
+            navigator.clipboard.writeText(text).then(function() {
+                showTooltip('Code copied to clipboard!');
+                
+                // Change button text temporarily
+                const button = document.getElementById('copyBtn');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                }, 2000);
+                
+                // Create confetti effect
+                createConfetti();
+            });
+        });
+        
+        // Copy referral link functionality
+        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+            const text = 'https://rideshare.app/refer?code=RIDE2023XYZ';
+            navigator.clipboard.writeText(text).then(function() {
+                showTooltip('Link copied to clipboard!');
+                
+                // Change button text temporarily
+                const button = document.getElementById('copyLinkBtn');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+        
+        // FAQ toggle functionality
+        const faqButtons = document.querySelectorAll('.border-b button');
+        faqButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // Toggle content visibility
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            });
+        });
+        
+        // Tooltip function
+        function showTooltip(message) {
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.textContent = message;
+            tooltip.style.position = 'fixed';
+            tooltip.style.top = '20px';
+            tooltip.style.left = '50%';
+            tooltip.style.transform = 'translateX(-50%)';
+            tooltip.style.padding = '10px 20px';
+            tooltip.style.backgroundColor = '#333';
+            tooltip.style.color = '#fff';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.opacity = '0';
+            tooltip.style.transition = 'opacity 0.3s ease';
+            
+            document.body.appendChild(tooltip);
+            
+            // Show tooltip
+            setTimeout(() => {
+                tooltip.style.opacity = '1';
+            }, 10);
+            
+            // Hide and remove tooltip
+            setTimeout(() => {
+                tooltip.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(tooltip);
+                }, 300);
+            }, 2000);
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const confettiContainer = document.createElement('div');
+            confettiContainer.style.position = 'fixed';
+            confettiContainer.style.top = '0';
+            confettiContainer.style.left = '0';
+            confettiContainer.style.width = '100%';
+            confettiContainer.style.height = '100%';
+            confettiContainer.style.pointerEvents = 'none';
+            confettiContainer.style.zIndex = '999';
+            document.body.appendChild(confettiContainer);
+            
+            const colors = ['#4f46e5', '#7c3aed', '#ec4899', '#f59e0b', '#10b981'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                confettiContainer.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(confettiContainer);
+            }, 5000);
+        }
+        
+        // Social share functionality
+        const socialButtons = document.querySelectorAll('.social-btn');
+        socialButtons.forEach((button, index) => {
+            button.addEventListener('click', function() {
+                const text = "Check out RideShare! Use my referral code RIDE2023XYZ and get $10 off your first ride!";
+                const url = "https://rideshare.app/refer?code=RIDE2023XYZ";
+                
+                let shareUrl = '';
+                
+                // Different share URLs based on platform
+                switch(index) {
+                    case 0: // Facebook
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+                        break;
+                    case 1: // Twitter
+                        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                        break;
+                    case 2: // WhatsApp
+                        shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+                        break;
+                    case 3: // Email
+                        shareUrl = `mailto:?subject=Join%20RideShare&body=${encodeURIComponent(text + '\n\n' + url)}`;
+                        break;
+                }
+                
+                if (shareUrl) {
+                    window.open(shareUrl, '_blank');
+                }
+            });
+        });
+        
+        // Initialize page - show first FAQ
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // Simulate a click on the first FAQ to open it
+            if (faqButtons.length > 0) {
+                faqButtons[0].click();
+            }
+        });
+    </script>
+</body>
+</html>

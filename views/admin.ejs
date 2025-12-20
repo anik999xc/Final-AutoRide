@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    
+    
+    <link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#007bff" />
+
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => {
+        console.log('Service Worker registered successfully.');
+      })
+      .catch((err) => {
+        console.error('Service Worker registration failed:', err);
+      });
+  }
+</script>
+
+    
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0af;
+            --primary-dark: #00668f;
+            --secondary: #f09;
+            --tertiary: #0ff;
+            --dark: #0a0a1a;
+            --darker: #05050f;
+            --light: #e0e0ff;
+            --error: #ff4040;
+            --success: #00ff8c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--darker);
+            color: var(--light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* Stars Background */
+        #stars, #stars2, #stars3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #stars {
+            background: transparent url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjMiLz4KPC9zdmc+') repeat top center;
+            animation: animateStars 50s linear infinite;
+        }
+
+        #stars2 {
+            background: transparent url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIyIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjIiLz4KPC9zdmc+') repeat top center;
+            animation: animateStars 100s linear infinite;
+        }
+
+        #stars3 {
+            background: transparent url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxjaXJjbGUgY3g9IjMiIGN5PSIzIiByPSIzIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjEiLz4KPC9zdmc+') repeat top center;
+            animation: animateStars 150s linear infinite;
+        }
+
+        @keyframes animateStars {
+            from { transform: translateY(0); }
+            to { transform: translateY(-1000px); }
+        }
+
+        .login-container {
+            background-color: rgba(10, 10, 26, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 0 20px var(--primary), 0 0 30px var(--primary-dark) inset;
+            padding: 2rem;
+            width: 400px;
+            max-width: 90%;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 5px var(--primary);
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--tertiary);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .cyber-input {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 170, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            color: var(--light);
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .cyber-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px var(--primary);
+            border-color: var(--tertiary);
+        }
+
+        .input-group.active::before {
+            content: '';
+            position: absolute;
+            top: -5%;
+            left: -2%;
+            width: 104%;
+            height: 110%;
+            background-color: rgba(0, 170, 255, 0.2);
+            z-index: -1;
+            animation: glitch 0.3s infinite alternate;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-dark);
+            border: none;
+            border-radius: 4px;
+            color: var(--light);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 170, 255, 0.5), transparent);
+            animation: button-shine 2s infinite;
+        }
+
+        @keyframes button-shine {
+            0% { top: -100%; }
+            20% { top: 100%; }
+            100% { top: 100%; }
+        }
+
+        .system-info {
+            margin-top: 2rem;
+            border-top: 1px solid var(--primary);
+            padding-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--light);
+            opacity: 0.8;
+        }
+
+        .system-info p {
+            margin: 0.3rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .system-info p span:first-child {
+            color: var(--tertiary);
+        }
+
+        #login-attempts {
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .version {
+            text-align: right;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        #access-message {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            height: 1.5em;
+        }
+
+        #access-message.granted {
+            color: var(--success);
+            text-shadow: 0 0 10px var(--success);
+            animation: glitch 0.3s infinite alternate;
+        }
+
+        #access-message.denied {
+            color: var(--error);
+            text-shadow: 0 0 10px var(--error);
+            animation: shake 0.5s;
+        }
+
+        @keyframes glitch {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(10deg); }
+            40% { transform: skew(0deg); }
+            60% { transform: skew(-5deg); }
+            80% { transform: skew(0deg); }
+            100% { transform: skew(5deg); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+        #redirect-message {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--tertiary);
+            font-style: italic;
+        }
+
+        .loading-dots:after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars background -->
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+
+    <div class="login-container">
+        <h1>Admin Portal</h1>
+        <h2>Security Level Alpha</h2>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="cyber-input" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="cyber-input" required>
+            </div>
+            
+            <button type="submit">Login</button>
+            
+            <div id="access-message"></div>
+            <div id="redirect-message">Redirecting to admin dashboard<span class="loading-dots"></span></div>
+        </form>
+
+        <div class="system-info">
+            <p>
+                <span>Login Attempts:</span>
+                <span id="login-attempts">0</span>
+            </p>
+            <p>
+                <span>System Status:</span>
+                <span><span class="status"></span>ONLINE</span>
+            </p>
+            <p>
+                <span>Encryption:</span>
+                <span>ACTIVE</span>
+            </p>
+            <p class="version">V.3.2.1</p>
+        </div>
+    </div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize login attempts counter
+            let loginAttempts = 0;
+            const loginAttemptsElement = document.getElementById('login-attempts');
+            const accessMessageElement = document.getElementById('access-message');
+            const redirectMessageElement = document.getElementById('redirect-message');
+            
+            // Add hover effect to container
+            const container = document.querySelector('.login-container');
+            
+            document.addEventListener('mousemove', function(e) {
+                const x = (e.clientX / window.innerWidth) * 20 - 10;
+                const y = (e.clientY / window.innerHeight) * 20 - 10;
+                
+                container.style.transform = `rotateX(${y/3}deg) rotateY(${x/3}deg)`;
+            });
+            
+            // Reset when mouse leaves
+            document.addEventListener('mouseleave', function() {
+                container.style.transform = 'rotateX(0) rotateY(0)';
+            });
+            
+            // Add glitch on input focus
+            const inputs = document.querySelectorAll('.cyber-input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.closest('.input-group').classList.add('active');
+                    
+                    // Simulating glitch effect randomly
+                    const glitchEffect = () => {
+                        const glitch = Math.random() > 0.8;
+                        if (glitch) {
+                            this.style.transform = `translateX(${Math.random() * 5 - 2.5}px)`;
+                            setTimeout(() => {
+                                this.style.transform = 'translateX(0)';
+                            }, 100);
+                        }
+                    };
+                    
+                    // Apply glitch effect periodically
+                    const glitchInterval = setInterval(glitchEffect, 500);
+                    
+                    // Store the interval ID on the element
+                    this.glitchInterval = glitchInterval;
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.closest('.input-group').classList.remove('active');
+                    
+                    // Clear the glitch effect interval
+                    if (this.glitchInterval) {
+                        clearInterval(this.glitchInterval);
+                    }
+                });
+            });
+            
+            // Handle form submission
+            const loginForm = document.getElementById('login-form');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get username and password
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Update login attempts
+                loginAttempts++;
+                loginAttemptsElement.textContent = loginAttempts;
+                
+                // In a real app, you'd validate credentials against a database
+                // For demo purposes, let's use a simple check
+                if (username && password) {
+                    // Show access granted message
+                    accessMessageElement.textContent = 'ACCESS GRANTED';
+                    accessMessageElement.className = 'granted';
+                    
+                    // Show redirect message
+                    redirectMessageElement.style.display = 'block';
+                    
+                    // Disable form inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                    });
+                    
+                    // Redirect after a short delay
+                    setTimeout(function() {
+                        // In a real application, this would redirect to your actual dashboard
+                        window.location.href = 'admin_dashboard.html';
+                        
+                        // For demo purposes, if you don't have an actual dashboard page,
+                        // you can use this alert instead and comment out the line above
+                        // alert('Redirecting to admin dashboard...');
+                    }, 3000);
+                } else {
+                    // Show access denied message
+                    accessMessageElement.textContent = 'ACCESS DENIED';
+                    accessMessageElement.className = 'denied';
+                    
+                    // Clear the message after a delay
+                    setTimeout(function() {
+                        accessMessageElement.textContent = '';
+                        accessMessageElement.className = '';
+                    }, 2000);
+                }
+            });
+        });
+        </script>
+</body>
+</html>
