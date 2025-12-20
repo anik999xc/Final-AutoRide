@@ -1,23 +1,23 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
-const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
-const uploadRoutes = require('./routes/upload');
-
-// ১. Load environment variables (সবার উপরে রাখাই ভালো)
-dotenv.config();
-
-const app = express();
-
-// Setup Socket.io with HTTP server
 const http = require("http");
 const socketio = require("socket.io"); 
+
+// ১. Load environment variables
+dotenv.config();
+
+// Routes import
+const routes = require('./routes/index');
+const uploadRoutes = require('./routes/upload');
+
+const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
 // ২. PORT কনফিগারেশন
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.json());
@@ -33,20 +33,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// ৩. নতুন মিডলওয়্যার: .env ভ্যালুগুলো EJS-এ পাঠানোর জন্য (এটি গুরুত্বপূর্ণ)
+// --- গুরুত্বপূর্ণ: /config রাউটটি সবার উপরে রাখতে হবে যেন HTML এর বদলে JSON রিটার্ন করে ---
+app.get('/config', (req, res) => {
+    res.json({
+        apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        supabaseUrl: process.env.SUPABASE_URL,
+        supabaseKey: process.env.SUPABASE_KEY
+    });
+});
+
+// ৩. EJS Locals Middleware (Security Optimized)
 app.use((req, res, next) => {
     res.locals.env = {
-        SUPABASE_URL: process.env.SUPABASE_URL,
-        SUPABASE_KEY: process.env.SUPABASE_KEY,
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
         EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY,
         EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,
-        EMAILJS_WELCOME_TEMPLATE_ID: process.env.EMAILJS_WELCOME_TEMPLATE_ID
+        // Supabase Secret Key বা Gemini Key এখানে না পাঠানোই ভালো (Security Reason)
     };
     next();
 });
 
-// ৪. Loading screen middleware (আপনার আগের লজিক অপরিবর্তিত রাখা হয়েছে)
+// ৪. Loading screen middleware
 app.use((req, res, next) => {
     const originalRender = res.render;
     res.render = function(view, options, callback) {
@@ -72,9 +80,8 @@ app.use((req, res, next) => {
 app.use('/upload', uploadRoutes);
 app.use('/', routes);
 
-// Socket.io logic (অপরিবর্তিত)
+// Socket.io logic
 io.on("connection", (socket) => {
-    console.log("New WebSocket connection");
     socket.on("userType", (type) => {
         socket.userType = type;
     });

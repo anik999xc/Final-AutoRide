@@ -5,74 +5,77 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
+    /* Glassmorphism Effect */
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 0.3s ease-out;
+    transition: all 0.5s ease-in-out;
 }
 
 .loading-content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 25px;
+}
+
+/* Logo Animation - Pulse Effect */
+.logo-wrapper {
+    animation: pulse 2s infinite ease-in-out;
 }
 
 .loading-logo {
-    width: 150px;
+    width: 120px; /* Ektu chhoto korle professional lage */
     height: auto;
-    margin-bottom: 20px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
 }
 
+/* Modern Spinner Design */
 .spinner-3d {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    border: 5px solid transparent;
-    border-top-color: #3498db;
-    border-bottom-color: #3498db;
-    animation: spin 1.5s linear infinite;
-    position: relative;
+    padding: 3px;
+    background: conic-gradient(from 0deg, transparent 20%, #3498db, #e74c3c, #f9c922);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+    animation: spin 1s infinite linear;
 }
 
-.spinner-3d:before, .spinner-3d:after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    border: 5px solid transparent;
+/* Loading Text Styling */
+.loading-text {
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: fadeInOut 1.5s infinite;
 }
 
-.spinner-3d:before {
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    border-top-color: #e74c3c;
-    border-bottom-color: #e74c3c;
-    animation: spin 2s linear infinite;
-}
-
-.spinner-3d:after {
-    top: 7px;
-    left: 7px;
-    right: 7px;
-    bottom: 7px;
-    border-top-color: #f9c922;
-    border-bottom-color: #f9c922;
-    animation: spin 1s linear infinite;
-}
-
+/* Animations */
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
 }
 
 .hidden {
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
 }

@@ -1,51 +1,63 @@
 // public/js/loading.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Show loading screen initially
     const loadingOverlay = document.getElementById('loading-overlay');
-    
-    // Hide loading screen when page is fully loaded
-    window.addEventListener('load', () => {
-        loadingOverlay.classList.add('hidden');
+
+    const showLoading = () => loadingOverlay.classList.remove('hidden');
+    const hideLoading = () => loadingOverlay.classList.add('hidden');
+
+    // 1. BFCACHE (Back Button) handle korar jonno main fix
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            // Jodi page cache theke ashe (Back button), tobe loading screen hide koro
+            hideLoading();
+        } else {
+            // Normal load holeo loading screen hide thakbe load sesh hole
+            hideLoading();
+        }
     });
-    
-    // Show loading screen when navigating away from the page
+
+    // Initial load hide
+    window.addEventListener('load', hideLoading);
+
+    // 2. Back button click korar sathe sathe jodi loading screen dekhaite chao
+    window.addEventListener('popstate', () => {
+        showLoading();
+    });
+
+    // Navigating away (Links)
     document.addEventListener('click', (e) => {
-        // Check if the clicked element is an internal link
         const clickedElement = e.target.closest('a');
         if (clickedElement && clickedElement.href && 
             clickedElement.href.startsWith(window.location.origin) && 
-            !clickedElement.getAttribute('target')) {
-            loadingOverlay.classList.remove('hidden');
+            !clickedElement.getAttribute('target') &&
+            !clickedElement.href.includes('#')) { // Anchor link check
+            showLoading();
         }
     });
-    
-    // Show loading screen for form submissions
-    document.addEventListener('submit', () => {
-        loadingOverlay.classList.remove('hidden');
-    });
-    
-    // For AJAX requests
+
+    // Form submissions
+    document.addEventListener('submit', showLoading);
+
+    // AJAX requests
     const originalXHROpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function() {
-        this.addEventListener('loadstart', () => {
-            loadingOverlay.classList.remove('hidden');
-        });
-        this.addEventListener('loadend', () => {
-            loadingOverlay.classList.add('hidden');
-        });
+        this.addEventListener('loadstart', showLoading);
+        this.addEventListener('loadend', hideLoading);
         originalXHROpen.apply(this, arguments);
     };
-    
-    // For fetch API
+
+    // Fetch API
     const originalFetch = window.fetch;
     window.fetch = function() {
-        loadingOverlay.classList.remove('hidden');
-        return originalFetch.apply(this, arguments).then(response => {
-            loadingOverlay.classList.add('hidden');
-            return response;
-        }).catch(error => {
-            loadingOverlay.classList.add('hidden');
-            throw error;
-        });
+        showLoading();
+        return originalFetch.apply(this, arguments)
+            .then(response => {
+                hideLoading();
+                return response;
+            })
+            .catch(error => {
+                hideLoading();
+                throw error;
+            });
     };
 });
