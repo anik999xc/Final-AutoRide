@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // Recommend: 'true' rakha bhalo nested object er jonne, tobe 'false' eo kaj korbe
 app.use(cookieParser());
 
 // Static files
@@ -37,8 +37,6 @@ app.set('view engine', 'ejs');
 app.get('/config', (req, res) => {
     res.json({
         apiKey: process.env.GOOGLE_MAPS_API_KEY,
-        supabaseUrl: process.env.SUPABASE_URL,
-        supabaseKey: process.env.SUPABASE_KEY
     });
 });
 
@@ -49,7 +47,8 @@ app.use((req, res, next) => {
         EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY,
         EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,
-        // Supabase Secret Key বা Gemini Key এখানে না পাঠানোই ভালো (Security Reason)
+        SUPABASE_URL: process.env.SUPABASE_URL,
+        SUPABASE_KEY: process.env.SUPABASE_KEY,
     };
     next();
 });
@@ -76,7 +75,32 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
+// --- NEW ROUTE START: Map Data Handling ---
+// Home page theke POST request handle korar jonne
+app.post('/passenger_map', (req, res) => {
+    const { pickup_name, pickup_lat, pickup_lng, drop_name, drop_lat, drop_lng } = req.body;
+
+    console.log("Received Booking Data:", req.body); // Debugging er jonne console log
+
+    // Data gulo passenger_map.ejs e pathano hocche
+    res.render('passenger_map', { 
+        rideData: {
+            pickup: { 
+                name: pickup_name, 
+                lat: parseFloat(pickup_lat), 
+                lng: parseFloat(pickup_lng) 
+            },
+            drop: { 
+                name: drop_name, 
+                lat: parseFloat(drop_lat), 
+                lng: parseFloat(drop_lng) 
+            }
+        }
+    });
+});
+// --- NEW ROUTE END ---
+
+// Existing Routes
 app.use('/upload', uploadRoutes);
 app.use('/', routes);
 

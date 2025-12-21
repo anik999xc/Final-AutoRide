@@ -470,161 +470,141 @@
                 <p class="copyright">&copy; 2025 AutoRide. All rights reserved.</p>
             </div>
         </footer>
-      
-<script>
-    // --- UI Helper Functions ---
-    const show = (el) => el.classList.remove('hidden');
-    const hide = (el) => el.classList.add('hidden');
-    
-    // --- Side Menu Logic ---
-    const menuBtn = document.getElementById('menuBtn');
-    const sideMenu = document.getElementById('sideMenu');
-    const sideMenuBackdrop = document.getElementById('sideMenuBackdrop');
-    
-    const openMenu = () => {
-        sideMenu.classList.replace('-translate-x-full', 'translate-x-0');
-        show(sideMenuBackdrop);
-        document.body.style.overflow = 'hidden';
-    };
-    
-    const closeMenu = () => {
-        sideMenu.classList.replace('translate-x-0', '-translate-x-full');
-        hide(sideMenuBackdrop);
-        document.body.style.overflow = '';
-    };
+    <script>
+    // --- UI Helpers ---
+    const show = (el) => el && el.classList.remove('hidden');
+    const hide = (el) => el && el.classList.add('hidden');
 
-    menuBtn.onclick = openMenu;
-    sideMenuBackdrop.onclick = closeMenu;
-    document.getElementById('sideMenuClose').onclick = closeMenu;
+    // --- Side Menu & Notifications ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuBtn = document.getElementById('menuBtn');
+        const sideMenu = document.getElementById('sideMenu');
+        const sideMenuBackdrop = document.getElementById('sideMenuBackdrop');
+        const notifBtn = document.getElementById('notifBtn');
+        const notifPanel = document.getElementById('notifPanel');
 
-    // --- Notification Panel ---
-    const notifBtn = document.getElementById('notifBtn');
-    const notifPanel = document.getElementById('notifPanel');
-    const notifCloseBtn = document.getElementById('notifCloseBtn');
-    
-    notifBtn.onclick = () => show(notifPanel);
-    notifCloseBtn.onclick = () => hide(notifPanel);
-
-    // --- Google Places API Integration ---
-    async function initGoogleServices() {
-        try {
-            // 1. Fetch API Key from your Node.js Server
-            const response = await fetch('/config');
-            const { apiKey } = await response.json();
-
-            // 2. Load Google Maps Script
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-
-            script.onload = () => {
-                setupAutocomplete();
-                detectCurrentLocation(); // Auto detect on load
+        if(menuBtn) {
+            menuBtn.onclick = () => {
+                sideMenu.classList.replace('-translate-x-full', 'translate-x-0');
+                show(sideMenuBackdrop);
             };
-        } catch (err) {
-            console.error("Configuration load fail:", err);
-            document.getElementById('pickupInput').value = "Error loading Maps";
         }
-    }
 
-    function setupAutocomplete() {
-        const pickupInput = document.getElementById('pickupInput');
-        const dropoffInput = document.getElementById('dropoffInput');
+        if(sideMenuBackdrop) {
+            sideMenuBackdrop.onclick = () => {
+                sideMenu.classList.replace('translate-x-0', '-translate-x-full');
+                hide(sideMenuBackdrop);
+            };
+        }
 
-        // Malda Strict Boundary
-        const maldaBounds = {
-            north: 25.3500, south: 24.8500, east: 88.3000, west: 87.9000
-        };
+        if(notifBtn) notifBtn.onclick = () => show(notifPanel);
+        if(document.getElementById('notifCloseBtn')) {
+            document.getElementById('notifCloseBtn').onclick = () => hide(notifPanel);
+        }
+    });
 
+    // --- Google Maps & Booking Logic ---
+    let pickupLat, pickupLng, dropLat, dropLng;
+
+    function initAutocomplete() {
+        const pickupInput = document.getElementById("pickupInput");
+        const dropInput = document.getElementById("dropoffInput");
+        
+        // Malda Boundary & India Restriction
         const options = {
-            bounds: maldaBounds,
-            strictBounds: true,
             componentRestrictions: { country: "in" },
-            fields: ["name", "geometry", "formatted_address"],
-            types: ['establishment', 'geocode']
+            fields: ["name", "geometry", "formatted_address"]
         };
 
         const pickupAuto = new google.maps.places.Autocomplete(pickupInput, options);
-        const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput, options);
+        const dropAuto = new google.maps.places.Autocomplete(dropInput, options);
 
-        // Hide West Bengal/India from suggestions using dynamic CSS
-        const style = document.createElement('style');
-        style.innerHTML = `
-            .pac-item > span:last-child { display: none !important; }
-            .pac-logo:after { opacity: 0.3; filter: grayscale(100%); }
-            .pac-container { border-radius: 12px; margin-top: 5px; border:none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        `;
-        document.head.appendChild(style);
+        // Pickup Selection logic
+        pickupAuto.addListener("place_changed", () => {
+            const place = pickupAuto.getPlace();
+            if (place.geometry) {
+                pickupLat = place.geometry.location.lat();
+                pickupLng = place.geometry.location.lng();
+            }
+        });
 
-        // Handle selection
-        const handleSelect = (autocomplete, input) => {
-            const place = autocomplete.getPlace();
-            if (place.name) input.value = place.name;
+        // Dropoff Selection logic
+        dropAuto.addListener("place_changed", () => {
+            const place = dropAuto.getPlace();
+            if (place.geometry) {
+                dropLat = place.geometry.location.lat();
+                dropLng = place.geometry.location.lng();
+            }
+        });
+
+        // Current Location (GPS) Logic
+        document.getElementById('setCurrentBtn').onclick = () => {
+            pickupInput.value = "Detecting...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    pickupLat = position.coords.latitude;
+                    pickupLng = position.coords.longitude;
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ location: { lat: pickupLat, lng: pickupLng } }, (results, status) => {
+                        if (status === "OK" && results[0]) {
+                            pickupInput.value = results[0].address_components[0].long_name + ", " + results[0].address_components[1].long_name;
+                        }
+                    });
+                }, () => { pickupInput.value = "Location denied"; });
+            }
         };
 
-        pickupAuto.addListener("place_changed", () => handleSelect(pickupAuto, pickupInput));
-        dropoffAuto.addListener("place_changed", () => handleSelect(dropoffAuto, dropoffInput));
+        // RIDE NOW Button - Form Submit Logic
+        document.getElementById("rideNowBtn").onclick = () => {
+            if (!pickupInput.value || !dropInput.value) {
+                return alert("Doya kore location select koro!");
+            }
+
+            // POST request to server
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/passenger_map";
+
+            const fields = {
+                pickup_name: pickupInput.value,
+                pickup_lat: pickupLat || "",
+                pickup_lng: pickupLng || "",
+                drop_name: dropInput.value,
+                drop_lat: dropLat || "",
+                drop_lng: dropLng || ""
+            };
+
+            for (const key in fields) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        };
     }
 
-    // --- Current Location (GPS) ---
-    function detectCurrentLocation() {
-        const pickupInput = document.getElementById('pickupInput');
-        pickupInput.value = "Detecting...";
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const geocoder = new google.maps.Geocoder();
-                const latlng = { lat: position.coords.latitude, lng: position.coords.longitude };
-
-                geocoder.geocode({ location: latlng }, (results, status) => {
-                    if (status === "OK" && results[0]) {
-                        // Sudhu landmark ba choto address ta neya
-                        const parts = results[0].address_components;
-                        pickupInput.value = parts[0].long_name + ", " + parts[1].long_name;
-                    }
-                });
-            }, () => {
-                pickupInput.value = "Location denied";
-            });
-        }
-    }
-
-    document.getElementById('setCurrentBtn').onclick = detectCurrentLocation;
-
-    // --- Authentication & Buttons ---
-    document.getElementById('rideNowBtn').onclick = () => {
-        const dropoff = document.getElementById('dropoffInput').value;
-        if (!dropoff) return alert("Please enter destination");
-        
-        alert("Redirecting to map for ride confirmation...");
-        window.location.href = '/passenger_map';
-    };
-
-    document.getElementById('logoutBtn').onclick = () => {
-        localStorage.removeItem('authKey');
-        window.location.href = '/login';
-    };
-
-    // --- Protected Route ---
-    (() => {
-        const authKey = localStorage.getItem('authKey');
-        if (!authKey && window.location.pathname !== '/login') {
+    // Logout Logic
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) {
+        logoutBtn.onclick = () => {
+            localStorage.removeItem('authKey');
             window.location.href = '/login';
-        }
-    })();
-
-    // Start everything
-    window.onload = initGoogleServices;
+        };
+    }
 </script>
-  <script>
+
+<script src="https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js"></script>
+<script>
   window.addEventListener("DOMContentLoaded", function() {
     window.AgentInitializer.init({
       rootId: "JotformAgent-0196de48239e7547a73dad213358e5d227b0",
       formID: "0196de48239e7547a73dad213358e5d227b0",
       queryParams: ["skipWelcome=1", "maximizable=1"],
-      domain: "https:\/\/www.jotform.com",
+      domain: "https://www.jotform.com",
       isInitialOpen: false,
       isDraggable: false,
       background: "linear-gradient(180deg, #FF8DB9 0%, #FF8DB9 100%)",
@@ -640,10 +620,16 @@
     });
   });
 </script>
-  <% if (typeof loadingScreen !== "undefined") { %>
+
+<script 
+  src="https://maps.googleapis.com/maps/api/js?key=<%= env.GOOGLE_MAPS_API_KEY %>&libraries=places&callback=initAutocomplete&loading=async" 
+  async defer>
+</script>
+
+<% if (typeof loadingScreen !== "undefined") { %>
     <%- loadingCss %>
     <%- loadingScreen %>
     <%- loadingJs %>
-    <% } %>
+<% } %>
 </body>
 </html>
