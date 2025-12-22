@@ -3,159 +3,966 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking - Confirm Your Ride</title>
+    <title>AutoRide - Confirm Your Ride</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; }
+        :root {
+            --primary-color: #006aff;
+            --primary-dark: #0056d2;
+            --primary-light: #e6f2ff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
         
-        #map { height: 65%; width: 100%; }
+        body, html { 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-feature-settings: 'cv11', 'ss01';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        #map { 
+            height: 70%; 
+            width: 100%; 
+            position: absolute; 
+            top: 0; 
+            z-index: 1;
+            border-bottom-left-radius: var(--border-radius-xl);
+            border-bottom-right-radius: var(--border-radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
 
         .back-btn {
-            position: absolute; top: 15px; left: 15px; z-index: 100;
-            background: white; border-radius: 50%; width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none;
+            position: absolute; 
+            top: 24px; 
+            left: 24px; 
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius); 
+            width: 48px; 
+            height: 48px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: var(--shadow-lg); 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--gray-700);
         }
 
-        .booking-panel {
-            position: fixed; bottom: 0; width: 100%; height: 35%;
-            background: white; border-top-left-radius: 25px; border-top-right-radius: 25px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); padding: 20px; z-index: 1000;
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+            color: var(--gray-900);
         }
 
-        .vehicle-info { display: flex; align-items: center; margin-bottom: 20px; }
-        .vehicle-img { width: 60px; margin-right: 15px; }
-        .details h3 { font-size: 18px; color: #333; }
-        .details p { font-size: 14px; color: #777; }
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Enhanced Info Window Styles */
+        .gm-style-iw-c { 
+            padding: 0 !important; 
+            border-radius: var(--border-radius) !important; 
+            max-height: 44px !important;
+            min-width: 120px !important;
+            box-shadow: var(--shadow-xl) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(12px) !important;
+        }
         
-        .price-section { margin-left: auto; text-align: right; }
-        .price-section h2 { font-size: 22px; color: #000; }
+        .gm-style-iw-d { 
+            overflow: hidden !important; 
+            padding: 0 !important; 
+            margin: 0 !important;
+            max-height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
 
+        .gm-style .gm-style-iw-d {
+            max-height: 44px !important;
+            margin-top: 0 !important; 
+        }
+
+        .gm-ui-hover-effect { display: none !important; }
+        .gm-style-iw-tc::after { display: none !important; }
+
+        .location-box {
+            display: flex !important;
+            align-items: center !important; 
+            justify-content: center !important; 
+            gap: 12px; 
+            padding: 0 16px; 
+            height: 44px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            border-radius: var(--border-radius);
+        }
+
+        .location-box span {
+            font-size: 13px; 
+            font-weight: 600; 
+            color: var(--gray-900);
+            white-space: nowrap; 
+            max-width: 140px; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .edit-btn {
+            background: var(--primary-color); 
+            color: white; 
+            border: none; 
+            padding: 8px;
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            height: 28px; 
+            width: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .edit-btn:hover { 
+            background: var(--primary-dark);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .edit-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Enhanced Booking Panel */
+        .booking-panel {
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            height: 35%;
+            background: white;
+            border-top-left-radius: var(--border-radius-xl); 
+            border-top-right-radius: var(--border-radius-xl);
+            box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.1); 
+            padding: 0; 
+            z-index: 1000;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .panel-handle { 
+            width: 48px; 
+            height: 4px; 
+            background: var(--gray-300); 
+            border-radius: 10px; 
+            margin: 12px auto 0 auto;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .panel-handle:hover {
+            background: var(--gray-400);
+            transform: scaleX(1.2);
+        }
+
+        .panel-handle:active {
+            cursor: grabbing;
+        }
+
+        .panel-content {
+            padding: 24px;
+            height: calc(100% - 16px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vehicle-info { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .vehicle-info:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .veh-details { 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+        }
+
+        .vehicle-img { 
+            width: 72px; 
+            height: 72px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: transform 0.2s ease;
+        }
+
+        .vehicle-img:hover {
+            transform: scale(1.05);
+        }
+
+        .details h3 { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .details p { 
+            font-size: 14px; 
+            color: var(--gray-600);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .details p::before {
+            content: "🕐";
+            font-size: 12px;
+        }
+
+        .price-section {
+            text-align: right;
+        }
+
+        .price-section h2 { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .price-section .price-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .extra-options { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 18px 20px; 
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-radius: var(--border-radius-lg); 
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .extra-options:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 15px;
+        }
+
+        .offers-btn {
+            color: var(--primary-color); 
+            font-weight: 600; 
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(0, 106, 255, 0.1);
+        }
+
+        .offers-btn:hover {
+            background: rgba(0, 106, 255, 0.15);
+            transform: translateX(2px);
+        }
+
+        .book-btn { 
+            width: 100%; 
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: var(--border-radius-lg); 
+            font-size: 17px; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-top: auto;
+        }
+
+        .book-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .book-btn:hover::before {
+            left: 100%;
+        }
+
+        .book-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--gray-700);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--gray-900);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 300px;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.warning {
+            background: var(--warning-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 390px) {
+            .back-btn {
+                top: 20px;
+                left: 20px;
+                width: 44px;
+                height: 44px;
+            }
+            
+            .panel-content {
+                padding: 20px;
+            }
+            
+            .vehicle-info {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            
+            .vehicle-img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .details h3 {
+                font-size: 18px;
+            }
+            
+            .price-section h2 {
+                font-size: 24px;
+            }
+            
+            .extra-options {
+                padding: 16px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        button:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Additional enhancements */
+        .price-section .price-label::before {
+            content: "💰 ";
+            font-size: 12px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .calculating {
+            position: relative;
+        }
+
+        .calculating::after {
+            content: "";
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--gray-300);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Enhanced micro-interactions */
+        .vehicle-info,
         .extra-options {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        .cash-tag { font-weight: bold; color: #2d3436; display: flex; align-items: center; gap: 5px; }
 
-        .book-btn {
-            width: 100%; background: #FCD12A; color: black; border: none;
-            padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+        .vehicle-info::before,
+        .extra-options::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+            pointer-events: none;
         }
-        .book-btn:hover { background: #e3bc24; }
+
+        .vehicle-info:hover::before,
+        .extra-options:hover::before {
+            left: 100%;
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading your ride...</div>
+    </div>
 
-    <button class="back-btn" onclick="window.history.back()">←</button>
-
+    <button class="back-btn" onclick="window.history.back()" aria-label="Go back">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    
     <div id="map"></div>
 
     <div class="booking-panel">
-        <div class="vehicle-info">
-            <img src="https://www.autoride.space/img/bike_icon.png" class="vehicle-img" alt="Bike">
-            <div class="details">
-                <h3>Bike <span style="font-size: 12px; font-weight: normal;">• 1 Person</span></h3>
-                <p id="distance-info">Calculating distance...</p>
+        <div class="panel-handle"></div>
+        <div class="panel-content">
+            <div class="vehicle-info">
+                <div class="veh-details">
+                    <img src="https://www.autoride.space/img/bike_icon.png" class="vehicle-img" alt="AutoRide Bike">
+                    <div class="details">
+                        <h3>
+                            <span class="status-indicator"></span>
+                            AutoRide Bike
+                        </h3>
+                        <p id="distance-info" class="calculating">Calculating route...</p>
+                    </div>
+                </div>
+                <div class="price-section">
+                    <h2 id="fare-display">₹--</h2>
+                    <div class="price-label">Total Fare</div>
+                </div>
             </div>
-            <div class="price-section">
-                <h2 id="fare-display">₹0</h2>
+            
+            <div class="extra-options">
+                <div class="payment-method">
+                    💵 Cash Payment
+                </div>
+                <div class="offers-btn">
+                    🎟️ Offers
+                    <i class="fas fa-chevron-right"></i>
+                </div>
             </div>
+            
+            <button class="book-btn" onclick="confirmBooking()">
+                <i class="fas fa-car" style="margin-right: 8px;"></i>
+                Confirm Ride
+            </button>
         </div>
-
-        <div class="extra-options">
-            <div class="cash-tag">💵 Cash</div>
-            <div style="color: #666; font-size: 14px; cursor: pointer;">Offers & Coupons ></div>
-        </div>
-
-        <button class="book-btn" onclick="confirmBooking()">Book Bike</button>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=<%= env.GOOGLE_MAPS_API_KEY %>&libraries=geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= env.GOOGLE_MAPS_API_KEY %>&libraries=geometry,places"></script>
 
     <script>
-        let map, pickupMarker, dropMarker, directionsService, directionsRenderer;
+        let map, directionsService, directionsRenderer, pickupMarker, dropMarker, pickupIW, dropIW;
         const RATE_PER_KM = 12;
+        const MAX_DISTANCE_KM = 15; // Maximum distance allowed from current location
 
-        // --- Important: Fetching Dynamic Data from Server ---
+        // India boundary coordinates (approximate)
+        const INDIA_BOUNDS = {
+            north: 37.6,
+            south: 8.4,
+            east: 97.25,
+            west: 68.7
+        };
+
         const rideData = <%- JSON.stringify(rideData) %>;
+        let pCoords = { lat: parseFloat(rideData.pickup.lat), lng: parseFloat(rideData.pickup.lng) };
+        let dCoords = { lat: parseFloat(rideData.drop.lat), lng: parseFloat(rideData.drop.lng) };
+        let pName = rideData.pickup.name || "Pickup";
+        let dName = rideData.drop.name || "Destination";
 
-        // Dynamic Coordinates calculation
-        let pickupCoords = { lat: parseFloat(rideData.pickup.lat), lng: parseFloat(rideData.pickup.lng) };
-        let dropCoords = { lat: parseFloat(rideData.drop.lat), lng: parseFloat(rideData.drop.lng) };
+        // Store user's current location (pickup location)
+        let userCurrentLocation = pCoords;
 
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 14,
-                center: pickupCoords,
-                disableDefaultUI: true,
-                styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }]
-            });
+        // Flag to prevent multiple validations
+        let isValidating = false;
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                map: map,
-                suppressMarkers: true,
-                polylineOptions: { strokeColor: "#000", strokeWeight: 4 }
-            });
-
-            // Pickup Marker with Dynamic Data
-            pickupMarker = new google.maps.Marker({
-                position: pickupCoords,
-                map: map,
-                draggable: true,
-                label: { text: "P", color: "white", fontWeight: "bold" }
-            });
-
-            // Drop Marker with Dynamic Data
-            dropMarker = new google.maps.Marker({
-                position: dropCoords,
-                map: map,
-                draggable: true,
-                label: { text: "D", color: "white", fontWeight: "bold" }
-            });
-
-            calculateRoute();
-
-            // Auto-update price when markers are dragged
-            [pickupMarker, dropMarker].forEach(marker => {
-                marker.addListener("dragend", () => {
-                    calculateRoute();
-                });
-            });
+        // Function to check if coordinates are within India
+        function isWithinIndia(lat, lng) {
+            return (lat >= INDIA_BOUNDS.south && lat <= INDIA_BOUNDS.north && 
+                    lng >= INDIA_BOUNDS.west && lng <= INDIA_BOUNDS.east);
         }
 
-        function calculateRoute() {
-            const start = pickupMarker.getPosition();
-            const end = dropMarker.getPosition();
+        // Function to calculate distance between two coordinates using Haversine formula
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c;
+            return distance;
+        }
+
+        // Function to validate route distance using Google Directions API
+        function validateRouteDistance(origin, destination, callback) {
+            if (isValidating) return;
+            isValidating = true;
 
             directionsService.route({
-                origin: start,
-                destination: end,
-                travelMode: 'DRIVING'
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING
             }, (response, status) => {
+                isValidating = false;
                 if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                    const distanceInMeters = response.routes[0].legs[0].distance.value;
-                    const distanceInKm = distanceInMeters / 1000;
+                    const route = response.routes[0];
+                    const leg = route.legs[0];
+                    const routeDistanceKm = leg.distance.value / 1000;
                     
-                    // Fare Calculation logic
-                    let totalFare = Math.round(distanceInKm * RATE_PER_KM);
-                    if (totalFare < 20) totalFare = 20; // Minimum fare
-
-                    // Updating UI
-                    document.getElementById("distance-info").innerText = distanceInKm.toFixed(1) + " km away";
-                    document.getElementById("fare-display").innerText = "₹" + totalFare;
+                    callback(routeDistanceKm <= MAX_DISTANCE_KM, routeDistanceKm);
+                } else {
+                    // Fallback to straight-line distance if route calculation fails
+                    const straightDistance = calculateDistance(origin.lat, origin.lng, destination.lat, destination.lng);
+                    callback(straightDistance <= MAX_DISTANCE_KM, straightDistance);
                 }
             });
         }
 
-        function confirmBooking() {
-            alert("Booking request sent! Connecting to driver...");
-            // Post booking logic goes here
+        function initMap() {
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('show');
+            
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15, center: pCoords, disableDefaultUI: true,
+                styles: [
+                    { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
+                    { "featureType": "transit", "stylers": [{ "visibility": "off" }] },
+                    { "featureType": "road", "elementType": "labels", "stylers": [{ "visibility": "simplified" }] }
+                ]
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map, suppressMarkers: true,
+                polylineOptions: { strokeColor: "#000", strokeWeight: 5, strokeOpacity: 0.8 }
+            });
+
+            const humanIcon = {
+                url: "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
+                scaledSize: new google.maps.Size(30, 30),
+                anchor: new google.maps.Point(15, 30)
+            };
+
+            pickupMarker = new google.maps.Marker({ 
+                position: pCoords, 
+                map: map, 
+                icon: humanIcon,
+                animation: google.maps.Animation.DROP
+            });
+            
+            dropMarker = new google.maps.Marker({ 
+                position: dCoords, 
+                map: map,
+                animation: google.maps.Animation.DROP
+            });
+
+            pickupIW = new google.maps.InfoWindow({ disableAutoPan: true });
+            dropIW = new google.maps.InfoWindow({ disableAutoPan: true });
+
+            updateBoxes();
+            calculateRoute();
+
+            pickupMarker.addListener("dragend", (e) => handleDragEnd(e, 'p'));
+            dropMarker.addListener("dragend", (e) => handleDragEnd(e, 'd'));
+            
+            // Hide loading after map loads
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.remove('show');
+            }, 1500);
         }
 
+        function updateBoxes() {
+            pickupIW.setContent(`
+                <div class="location-box">
+                    <span title="${pName}">${pName}</span>
+                    <button class="edit-btn" onclick="enableEdit('p')" aria-label="Edit pickup location">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+            `);
+            pickupIW.open(map, pickupMarker);
+
+            dropIW.setContent(`
+                <div class="location-box">
+                    <span title="${dName}">${dName}</span>
+                    <button class="edit-btn" onclick="enableEdit('d')" aria-label="Edit destination">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+            `);
+            dropIW.open(map, dropMarker);
+        }
+
+        function enableEdit(type) {
+            if(type === 'p') { 
+                pickupMarker.setDraggable(true); 
+                pickupIW.close(); 
+                showToast('Drag the pickup marker to change location');
+            }
+            else { 
+                dropMarker.setDraggable(true); 
+                dropIW.close(); 
+                showToast('Drag the destination marker to change location');
+            }
+        }
+
+        function handleDragEnd(event, type) {
+            const newCoords = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+            
+            // First check if the new location is within India
+            if (!isWithinIndia(newCoords.lat, newCoords.lng)) {
+                showToast('Location must be within India', 'error');
+                resetMarker(type);
+                return;
+            }
+
+            // Show validation message
+            showToast('Checking route distance...');
+
+            // Validate route distance using actual Google Directions
+            const origin = userCurrentLocation;
+            const destination = newCoords;
+            
+            validateRouteDistance(origin, destination, (isValid, distance) => {
+                if (!isValid) {
+                    showToast(`Route distance must be within ${MAX_DISTANCE_KM}km from your current location. Selected route is ${distance.toFixed(1)}km.`, 'error');
+                    resetMarker(type);
+                    return;
+                }
+
+                // If validation passed, update location
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: newCoords }, (results, status) => {
+                    if (status === "OK" && results[0]) {
+                        let address = results[0].formatted_address.split(',')[0]; 
+                        if (type === 'p') { 
+                            pCoords = newCoords; 
+                            pName = address; 
+                            pickupMarker.setDraggable(false); 
+                            // Update user current location if pickup is changed
+                            userCurrentLocation = newCoords;
+                        }
+                        else { 
+                            dCoords = newCoords; 
+                            dName = address; 
+                            dropMarker.setDraggable(false); 
+                        }
+                        updateBoxes();
+                        calculateRoute();
+                        showToast('Location updated successfully', 'success');
+                    } else {
+                        showToast('Failed to update location', 'error');
+                        resetMarker(type);
+                    }
+                });
+            });
+        }
+
+        function resetMarker(type) {
+            if (type === 'p') {
+                pickupMarker.setPosition(pCoords);
+                pickupMarker.setDraggable(false);
+            } else {
+                dropMarker.setPosition(dCoords);
+                dropMarker.setDraggable(false);
+            }
+            updateBoxes();
+        }
+
+        function calculateRoute() {
+            // Add calculating state
+            document.getElementById("distance-info").classList.add('calculating');
+            document.getElementById("distance-info").innerText = "Calculating route...";
+            document.getElementById("fare-display").innerText = "₹--";
+
+            directionsService.route({
+                origin: pCoords, 
+                destination: dCoords, 
+                travelMode: 'DRIVING'
+            }, (response, status) => {
+                // Remove calculating state
+                document.getElementById("distance-info").classList.remove('calculating');
+                
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    const leg = response.routes[0].legs[0];
+                    
+                    // Distance ke km-e niye 12 diye gun kora hoyeche (Rate: 12/km)
+                    let fare = Math.max(20, Math.round((leg.distance.value / 1000) * 12));
+                    
+                    document.getElementById("distance-info").innerText = leg.distance.text + " • " + leg.duration.text;
+                    document.getElementById("fare-display").innerText = "₹" + fare;
+                } else {
+                    document.getElementById("distance-info").innerText = "Route calculation failed";
+                    if (typeof showToast === "function") {
+                        showToast('Failed to calculate route', 'error');
+                    }
+                }
+            });
+        }
+
+        function confirmBooking() { 
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            
+            // Add loading state
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Booking...';
+            btn.disabled = true;
+            
+            // Simulate booking process
+            setTimeout(() => {
+                showToast('Ride booked successfully! Finding nearby drivers...', 'success');
+                btn.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Ride Booked!';
+                btn.style.background = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 3000);
+            }, 2000);
+        }
+
+        // Enhanced utility functions
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast').forEach(toast => toast.remove());
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Keep your original initialization
         window.onload = initMap;
+
+        // Add some enhancement without changing core functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add subtle interactions
+            const panelHandle = document.querySelector('.panel-handle');
+            
+            panelHandle.addEventListener('mousedown', function() {
+                this.style.transform = 'scaleX(1.1)';
+            });
+            
+            panelHandle.addEventListener('mouseup', function() {
+                this.style.transform = 'scaleX(1.2)';
+            });
+            
+            panelHandle.addEventListener('mouseleave', function() {
+                this.style.transform = 'scaleX(1)';
+            });
+        });
+
+        // Enhanced error handling without breaking original functionality
+        window.addEventListener('error', function(e) {
+            console.error('Error:', e.error);
+            showToast('Something went wrong. Please try again.', 'error');
+        });
     </script>
 </body>
 </html>
