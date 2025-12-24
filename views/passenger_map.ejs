@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoRide - Confirm Your Ride</title>
+    <title><%= title || 'AutoRide - Confirm Your Ride' %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <!-- FIXED: Pass ride data properly to JavaScript -->
+    <script id="rideDataScript" type="application/json">
+        <%- JSON.stringify(rideData || {}) %>
+    </script>
+    
     <style>
         :root {
             --primary-color: #006aff;
@@ -46,7 +53,6 @@
             overflow: hidden; 
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-feature-settings: 'cv11', 'ss01';
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -90,91 +96,6 @@
             color: var(--gray-900);
         }
 
-        .back-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Enhanced Info Window Styles */
-        .gm-style-iw-c { 
-            padding: 0 !important; 
-            border-radius: var(--border-radius) !important; 
-            max-height: 44px !important;
-            min-width: 120px !important;
-            box-shadow: var(--shadow-xl) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(12px) !important;
-        }
-        
-        .gm-style-iw-d { 
-            overflow: hidden !important; 
-            padding: 0 !important; 
-            margin: 0 !important;
-            max-height: 44px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .gm-style .gm-style-iw-d {
-            max-height: 44px !important;
-            margin-top: 0 !important; 
-        }
-
-        .gm-ui-hover-effect { display: none !important; }
-        .gm-style-iw-tc::after { display: none !important; }
-
-        .location-box {
-            display: flex !important;
-            align-items: center !important; 
-            justify-content: center !important; 
-            gap: 12px; 
-            padding: 0 16px; 
-            height: 44px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            width: 100%;
-            border-radius: var(--border-radius);
-        }
-
-        .location-box span {
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--gray-900);
-            white-space: nowrap; 
-            max-width: 140px; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-            line-height: 1.2;
-        }
-
-        .edit-btn {
-            background: var(--primary-color); 
-            color: white; 
-            border: none; 
-            padding: 8px;
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 11px; 
-            height: 28px; 
-            width: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .edit-btn:hover { 
-            background: var(--primary-dark);
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .edit-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Enhanced Booking Panel */
         .booking-panel {
             position: fixed; 
             bottom: 0; 
@@ -215,10 +136,6 @@
             transform: scaleX(1.2);
         }
 
-        .panel-handle:active {
-            cursor: grabbing;
-        }
-
         .panel-content {
             padding: 24px;
             height: calc(100% - 16px);
@@ -226,6 +143,395 @@
             flex-direction: column;
         }
 
+        .book-btn { 
+            width: 100%; 
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: var(--border-radius-lg); 
+            font-size: 17px; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-top: auto;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .book-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Error handling styles */
+        .error-container {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            z-index: 2000;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: var(--warning-color);
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Driver Accepted Modal */
+        .driver-accepted-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .driver-accepted-modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .driver-card {
+            background: white;
+            padding: 32px;
+            border-radius: var(--border-radius-xl);
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: checkmark 0.6s ease-in-out 0.3s both;
+        }
+
+        .success-icon i {
+            color: white;
+            font-size: 32px;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .driver-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .driver-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+
+        .star-rating {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .arrival-info {
+            background: linear-gradient(135deg, var(--primary-light), #dbeafe);
+            padding: 20px;
+            border-radius: var(--border-radius-lg);
+            margin: 24px 0;
+            border: 1px solid var(--primary-color);
+        }
+
+        .arrival-text {
+            font-size: 14px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .arrival-time {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .otp-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 24px;
+            border-radius: var(--border-radius-lg);
+            margin: 24px 0;
+            border: 2px solid #f59e0b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .otp-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .otp-label {
+            font-size: 14px;
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .otp-code {
+            font-size: 36px;
+            font-weight: 900;
+            color: #f59e0b;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .driver-vehicle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .driver-phone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        /* Timer Modal */
+        .timer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .timer-modal.show {
+            display: flex;
+        }
+
+        .timer-content {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius-xl);
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-text {
+            font-size: 18px;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+        }
+
+        /* Status Update */
+        .status-update {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 10000;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        .status-update.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .status-icon.arrived {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-icon.started {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Vehicle Info */
         .vehicle-info { 
             display: flex; 
             align-items: center; 
@@ -239,11 +545,6 @@
             transition: all 0.2s ease;
         }
 
-        .vehicle-info:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .veh-details { 
             display: flex; 
             align-items: center; 
@@ -255,11 +556,6 @@
             height: 72px;
             object-fit: contain;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-            transition: transform 0.2s ease;
-        }
-
-        .vehicle-img:hover {
-            transform: scale(1.05);
         }
 
         .details h3 { 
@@ -278,30 +574,19 @@
             gap: 6px;
         }
 
-        .details p::before {
-            content: "🕐";
-            font-size: 12px;
-        }
-
-        .price-section {
-            text-align: right;
-        }
-
         .price-section h2 { 
             font-size: 28px; 
             font-weight: 800; 
             color: var(--gray-900);
-            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-700) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
             margin-bottom: 4px;
         }
 
-        .price-section .price-label {
+        .price-label {
             font-size: 12px;
             color: var(--gray-500);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .extra-options { 
@@ -314,12 +599,6 @@
             margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-        }
-
-        .extra-options:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
         }
 
         .payment-method {
@@ -343,93 +622,6 @@
             padding: 6px 12px;
             border-radius: 8px;
             background: rgba(0, 106, 255, 0.1);
-        }
-
-        .offers-btn:hover {
-            background: rgba(0, 106, 255, 0.15);
-            transform: translateX(2px);
-        }
-
-        .book-btn { 
-            width: 100%; 
-            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
-            color: white; 
-            border: none; 
-            padding: 18px; 
-            border-radius: var(--border-radius-lg); 
-            font-size: 17px; 
-            font-weight: 700; 
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            margin-top: auto;
-        }
-
-        .book-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .book-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .book-btn:hover::before {
-            left: 100%;
-        }
-
-        .book-btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Loading State */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--gray-200);
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--gray-700);
-            font-size: 16px;
-            font-weight: 500;
         }
 
         /* Toast Notifications */
@@ -464,139 +656,176 @@
             background: var(--danger-color);
         }
 
+        .toast.info {
+            background: var(--primary-color);
+        }
+
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Responsive Design */
-        @media (max-width: 390px) {
-            .back-btn {
-                top: 20px;
-                left: 20px;
-                width: 44px;
-                height: 44px;
-            }
-            
-            .panel-content {
-                padding: 20px;
-            }
-            
-            .vehicle-info {
-                padding: 16px;
-                margin-bottom: 16px;
-            }
-            
-            .vehicle-img {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .details h3 {
-                font-size: 18px;
-            }
-            
-            .price-section h2 {
-                font-size: 24px;
-            }
-            
-            .extra-options {
-                padding: 16px;
-            }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Focus styles for keyboard navigation */
-        button:focus-visible {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Additional enhancements */
-        .price-section .price-label::before {
-            content: "💰 ";
-            font-size: 12px;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--success-color);
+        /* Custom Map Markers */
+        .custom-marker {
+            background: white;
             border-radius: 50%;
-            margin-right: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pickup-marker {
+            background: var(--success-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: 4px solid white;
+        }
+
+        .drop-marker {
+            background: var(--danger-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: 4px solid white;
+        }
+
+        .driver-marker {
+            background: var(--primary-color);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border: 4px solid white;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0% {
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+                box-shadow: 0 0 0 0 rgba(0, 106, 255, 0.7);
             }
             70% {
-                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+                box-shadow: 0 0 0 10px rgba(0, 106, 255, 0);
             }
             100% {
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+                box-shadow: 0 0 0 0 rgba(0, 106, 255, 0);
             }
         }
 
-        .calculating {
-            position: relative;
-        }
-
-        .calculating::after {
-            content: "";
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--gray-300);
-            border-top: 2px solid var(--primary-color);
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
-        /* Enhanced micro-interactions */
-        .vehicle-info,
-        .extra-options {
-            position: relative;
-            overflow: hidden;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .vehicle-info::before,
-        .extra-options::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s;
-            pointer-events: none;
-        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .booking-panel {
+                height: 40%;
+            }
 
-        .vehicle-info:hover::before,
-        .extra-options:hover::before {
-            left: 100%;
+            #map {
+                height: 65%;
+            }
+
+            .vehicle-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .price-section {
+                align-self: stretch;
+                text-align: center;
+                padding: 16px;
+                background: rgba(16, 185, 129, 0.1);
+                border-radius: var(--border-radius);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">Loading your ride...</div>
+    <!-- Error Container -->
+    <div class="error-container" id="errorContainer">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-title">Unable to Load Ride Data</div>
+        <div class="error-message" id="errorMessage">
+            There was a problem loading your ride information. Please try again.
+        </div>
+        <button class="retry-btn" onclick="location.reload()">
+            <i class="fas fa-redo mr-2"></i>
+            Retry
+        </button>
+    </div>
+
+    <!-- Timer Modal -->
+    <div class="timer-modal" id="timerModal">
+        <div class="timer-content">
+            <div class="timer-circle">
+                <span id="timerDisplay">3:00</span>
+            </div>
+            <div class="timer-text">Finding available drivers...</div>
+        </div>
+    </div>
+
+    <!-- Driver Accepted Modal -->
+    <div class="driver-accepted-modal" id="driverAcceptedModal">
+        <div class="driver-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <div class="driver-name" id="acceptedDriverName">Driver Name</div>
+            
+            <div class="driver-rating">
+                <span class="star-rating">⭐ <span id="acceptedDriverRating">4.8</span></span>
+            </div>
+            
+            <div class="arrival-info">
+                <div class="arrival-text">🚗 Arriving in</div>
+                <div class="arrival-time">
+                    <span id="arrivalTime">5 mins</span>
+                </div>
+            </div>
+            
+            <div class="otp-section">
+                <div class="otp-label">Share this OTP with driver:</div>
+                <div class="otp-code" id="rideOtp">4645</div>
+            </div>
+            
+            <div class="driver-phone" id="driverPhone">
+                <i class="fas fa-phone"></i>
+                <span>+880 1234-567890</span>
+            </div>
+            
+            <div class="driver-vehicle" id="driverVehicle">
+                <i class="fas fa-motorcycle"></i>
+                <span>Honda CB 150R</span>
+                <span>•</span>
+                <span>DHK-1234</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update -->
+    <div class="status-update" id="statusUpdate">
+        <div class="status-icon" id="statusIcon">
+            <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div class="status-text" id="statusText">Driver is on the way</div>
     </div>
 
     <button class="back-btn" onclick="window.history.back()" aria-label="Go back">
@@ -610,13 +839,10 @@
         <div class="panel-content">
             <div class="vehicle-info">
                 <div class="veh-details">
-                    <img src="https://www.autoride.space/img/bike_icon.png" class="vehicle-img" alt="AutoRide Bike">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830315.png" class="vehicle-img" alt="AutoRide Bike">
                     <div class="details">
-                        <h3>
-                            <span class="status-indicator"></span>
-                            AutoRide Bike
-                        </h3>
-                        <p id="distance-info" class="calculating">Calculating route...</p>
+                        <h3>AutoRide Bike</h3>
+                        <p id="distance-info" class="calculating">🕐 Calculating route...</p>
                     </div>
                 </div>
                 <div class="price-section">
@@ -635,290 +861,520 @@
                 </div>
             </div>
             
-            <button class="book-btn" onclick="confirmBooking()">
-                <i class="fas fa-car" style="margin-right: 8px;"></i>
-                Confirm Ride
+            <button class="book-btn" id="confirmBookingBtn">
+                <i class="fas fa-search" style="margin-right: 8px;"></i>
+                Find Driver
             </button>
         </div>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=<%= env.GOOGLE_MAPS_API_KEY %>&libraries=geometry,places"></script>
-
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        let map, directionsService, directionsRenderer, pickupMarker, dropMarker, pickupIW, dropIW;
-        const RATE_PER_KM = 12;
-        const MAX_DISTANCE_KM = 15; // Maximum distance allowed from current location
+        // Global variables
+        let socket;
+        let map;
+        let currentLocation = null;
+        let pickupMarker, dropMarker, driverMarker;
+        let rideData = null;
+        let timerInterval = null;
+        let rideId = null;
+        let acceptedDriver = null;
+        let currentOtp = null;
 
-        // India boundary coordinates (approximate)
-        const INDIA_BOUNDS = {
-            north: 37.6,
-            south: 8.4,
-            east: 97.25,
-            west: 68.7
-        };
-
-        const rideData = <%- JSON.stringify(rideData) %>;
-        let pCoords = { lat: parseFloat(rideData.pickup.lat), lng: parseFloat(rideData.pickup.lng) };
-        let dCoords = { lat: parseFloat(rideData.drop.lat), lng: parseFloat(rideData.drop.lng) };
-        let pName = rideData.pickup.name || "Pickup";
-        let dName = rideData.drop.name || "Destination";
-
-        // Store user's current location (pickup location)
-        let userCurrentLocation = pCoords;
-
-        // Flag to prevent multiple validations
-        let isValidating = false;
-
-        // Function to check if coordinates are within India
-        function isWithinIndia(lat, lng) {
-            return (lat >= INDIA_BOUNDS.south && lat <= INDIA_BOUNDS.north && 
-                    lng >= INDIA_BOUNDS.west && lng <= INDIA_BOUNDS.east);
-        }
-
-        // Function to calculate distance between two coordinates using Haversine formula
-        function calculateDistance(lat1, lng1, lat2, lng2) {
-            const R = 6371; // Earth's radius in kilometers
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLng = (lng2 - lng1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                      Math.sin(dLng/2) * Math.sin(dLng/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            const distance = R * c;
-            return distance;
-        }
-
-        // Function to validate route distance using Google Directions API
-        function validateRouteDistance(origin, destination, callback) {
-            if (isValidating) return;
-            isValidating = true;
-
-            directionsService.route({
-                origin: origin,
-                destination: destination,
-                travelMode: google.maps.TravelMode.DRIVING
-            }, (response, status) => {
-                isValidating = false;
-                if (status === 'OK') {
-                    const route = response.routes[0];
-                    const leg = route.legs[0];
-                    const routeDistanceKm = leg.distance.value / 1000;
-                    
-                    callback(routeDistanceKm <= MAX_DISTANCE_KM, routeDistanceKm);
+        // FIXED: Enhanced ride data initialization with proper error handling
+        function initRideData() {
+            try {
+                // Get ride data from the script tag
+                const rideDataScript = document.getElementById('rideDataScript');
+                if (rideDataScript && rideDataScript.textContent) {
+                    rideData = JSON.parse(rideDataScript.textContent);
+                    console.log('Ride data loaded from script:', rideData);
                 } else {
-                    // Fallback to straight-line distance if route calculation fails
-                    const straightDistance = calculateDistance(origin.lat, origin.lng, destination.lat, destination.lng);
-                    callback(straightDistance <= MAX_DISTANCE_KM, straightDistance);
+                    throw new Error('No ride data script found');
                 }
-            });
+
+                // Validate ride data structure
+                if (!rideData || !rideData.pickup || !rideData.drop) {
+                    throw new Error('Invalid ride data structure');
+                }
+
+                // Validate coordinates
+                if (!rideData.pickup.lat || !rideData.pickup.lng || 
+                    !rideData.drop.lat || !rideData.drop.lng) {
+                    throw new Error('Missing coordinate data');
+                }
+
+                console.log('✅ Ride data validation successful:', rideData);
+                return true;
+
+            } catch (error) {
+                console.error('❌ Error loading ride data:', error);
+                
+                // Show error to user
+                showError('Failed to load ride information. Please try again.');
+                
+                // Fallback data for development/testing
+                rideData = {
+                    id: 'fallback_' + Date.now(),
+                    pickup: { 
+                        name: "Current Location", 
+                        lat: 23.8103, 
+                        lng: 90.4125 
+                    },
+                    drop: { 
+                        name: "Destination", 
+                        lat: 23.8203, 
+                        lng: 90.4225 
+                    },
+                    distance: "1.5",
+                    estimatedDuration: 5,
+                    estimatedFare: 25
+                };
+                
+                console.log('🔄 Using fallback ride data:', rideData);
+                return false;
+            }
         }
 
+        // FIXED: Enhanced map initialization with proper error handling
         function initMap() {
-            // Show loading overlay
-            document.getElementById('loadingOverlay').classList.add('show');
-            
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15, center: pCoords, disableDefaultUI: true,
-                styles: [
-                    { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
-                    { "featureType": "transit", "stylers": [{ "visibility": "off" }] },
-                    { "featureType": "road", "elementType": "labels", "stylers": [{ "visibility": "simplified" }] }
-                ]
-            });
+            try {
+                // Validate ride data first
+                if (!rideData || !rideData.pickup || !rideData.drop) {
+                    throw new Error('Ride data not available for map initialization');
+                }
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                map: map, suppressMarkers: true,
-                polylineOptions: { strokeColor: "#000", strokeWeight: 5, strokeOpacity: 0.8 }
-            });
+                // Validate coordinates
+                if (!rideData.pickup.lat || !rideData.pickup.lng || 
+                    !rideData.drop.lat || !rideData.drop.lng) {
+                    throw new Error('Invalid coordinates in ride data');
+                }
 
-            const humanIcon = {
-                url: "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
-                scaledSize: new google.maps.Size(30, 30),
-                anchor: new google.maps.Point(15, 30)
-            };
+                const pCoords = [rideData.pickup.lat, rideData.pickup.lng];
+                const dCoords = [rideData.drop.lat, rideData.drop.lng];
 
-            pickupMarker = new google.maps.Marker({ 
-                position: pCoords, 
-                map: map, 
-                icon: humanIcon,
-                animation: google.maps.Animation.DROP
-            });
-            
-            dropMarker = new google.maps.Marker({ 
-                position: dCoords, 
-                map: map,
-                animation: google.maps.Animation.DROP
-            });
+                console.log('🗺️ Initializing map with coordinates:', { pickup: pCoords, drop: dCoords });
 
-            pickupIW = new google.maps.InfoWindow({ disableAutoPan: true });
-            dropIW = new google.maps.InfoWindow({ disableAutoPan: true });
+                // Initialize Leaflet map
+                map = L.map('map', {
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    dragging: true,
+                    tap: true,
+                    touchZoom: true
+                }).setView(pCoords, 13);
 
-            updateBoxes();
-            calculateRoute();
+                // Add map tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18,
+                    tileSize: 256,
+                    zoomOffset: 0
+                }).addTo(map);
 
-            pickupMarker.addListener("dragend", (e) => handleDragEnd(e, 'p'));
-            dropMarker.addListener("dragend", (e) => handleDragEnd(e, 'd'));
-            
-            // Hide loading after map loads
-            setTimeout(() => {
-                document.getElementById('loadingOverlay').classList.remove('show');
-            }, 1500);
+                // Enhanced pickup marker
+                const pickupIcon = L.divIcon({
+                    html: '<div class="custom-marker pickup-marker"><i class="fas fa-user"></i></div>',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    className: 'custom-marker-container'
+                });
+
+                pickupMarker = L.marker(pCoords, { icon: pickupIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>📍 Pickup</b><br>${rideData.pickup.name}`, {
+                        className: 'custom-popup'
+                    });
+
+                // Enhanced drop marker
+                const dropIcon = L.divIcon({
+                    html: '<div class="custom-marker drop-marker"><i class="fas fa-map-marker-alt"></i></div>',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    className: 'custom-marker-container'
+                });
+
+                dropMarker = L.marker(dCoords, { icon: dropIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>🎯 Destination</b><br>${rideData.drop.name}`, {
+                        className: 'custom-popup'
+                    });
+
+                // Draw route line
+                const routeLine = L.polyline([pCoords, dCoords], {
+                    color: '#006aff',
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: '10, 10'
+                }).addTo(map);
+
+                // Fit map to show both markers
+                const group = new L.featureGroup([pickupMarker, dropMarker]);
+                map.fitBounds(group.getBounds().pad(0.15));
+
+                // Update ride info
+                updateRideInfo();
+
+                console.log('✅ Map initialized successfully');
+
+            } catch (error) {
+                console.error('❌ Map initialization error:', error);
+                showError('Unable to load map. Please check your internet connection and try again.');
+                
+                // Show fallback UI
+                document.getElementById('map').innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: var(--gray-100); border-radius: var(--border-radius-lg);">
+                        <div style="text-align: center; color: var(--gray-600);">
+                            <i class="fas fa-map text-4xl mb-4 text-gray-400"></i>
+                            <p style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Map Unavailable</p>
+                            <p style="font-size: 14px;">Please check your connection</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
-        function updateBoxes() {
-            pickupIW.setContent(`
-                <div class="location-box">
-                    <span title="${pName}">${pName}</span>
-                    <button class="edit-btn" onclick="enableEdit('p')" aria-label="Edit pickup location">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                </div>
-            `);
-            pickupIW.open(map, pickupMarker);
+        // Enhanced ride info update
+        function updateRideInfo() {
+            try {
+                if (!rideData) return;
 
-            dropIW.setContent(`
-                <div class="location-box">
-                    <span title="${dName}">${dName}</span>
-                    <button class="edit-btn" onclick="enableEdit('d')" aria-label="Edit destination">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                </div>
-            `);
-            dropIW.open(map, dropMarker);
-        }
+                // Update distance and time info
+                const distanceInfo = document.getElementById("distance-info");
+                if (distanceInfo) {
+                    distanceInfo.classList.remove('calculating');
+                    distanceInfo.innerHTML = `🕐 ${rideData.distance || '0'} km • ${rideData.estimatedDuration || 0} mins`;
+                }
 
-        function enableEdit(type) {
-            if(type === 'p') { 
-                pickupMarker.setDraggable(true); 
-                pickupIW.close(); 
-                showToast('Drag the pickup marker to change location');
-            }
-            else { 
-                dropMarker.setDraggable(true); 
-                dropIW.close(); 
-                showToast('Drag the destination marker to change location');
+                // Update fare display
+                const fareDisplay = document.getElementById("fare-display");
+                if (fareDisplay) {
+                    fareDisplay.textContent = `₹${rideData.estimatedFare || 0}`;
+                }
+
+                console.log('✅ Ride info updated successfully');
+
+            } catch (error) {
+                console.error('❌ Error updating ride info:', error);
+                showToast('❌ Error updating ride information', 'error');
             }
         }
 
-        function handleDragEnd(event, type) {
-            const newCoords = { lat: event.latLng.lat(), lng: event.latLng.lng() };
-            
-            // First check if the new location is within India
-            if (!isWithinIndia(newCoords.lat, newCoords.lng)) {
-                showToast('Location must be within India', 'error');
-                resetMarker(type);
-                return;
+        // Initialize socket connection
+        function initSocket() {
+            try {
+                socket = io();
+                socket.emit('userType', 'passenger');
+
+                // Listen for ride events
+                socket.on('rideAccepted', handleRideAccepted);
+                socket.on('driverLocationUpdate', handleDriverLocationUpdate);
+                socket.on('rideStarted', handleRideStarted);
+                socket.on('rideFinished', handleRideFinished);
+                socket.on('driverArrived', handleDriverArrived);
+                socket.on('rideRequestExpired', handleRideRequestExpired);
+
+                console.log('✅ Socket connection initialized');
+
+            } catch (error) {
+                console.error('❌ Socket initialization error:', error);
+                showError('Connection error. Please refresh the page.');
             }
+        }
 
-            // Show validation message
-            showToast('Checking route distance...');
+        // Generate unique OTP for each ride
+        function generateUniqueOtp() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
 
-            // Validate route distance using actual Google Directions
-            const origin = userCurrentLocation;
-            const destination = newCoords;
-            
-            validateRouteDistance(origin, destination, (isValid, distance) => {
-                if (!isValid) {
-                    showToast(`Route distance must be within ${MAX_DISTANCE_KM}km from your current location. Selected route is ${distance.toFixed(1)}km.`, 'error');
-                    resetMarker(type);
+        // Enhanced confirm booking with better error handling
+        function confirmBooking() {
+            try {
+                const btn = document.getElementById('confirmBookingBtn');
+                const originalHTML = btn.innerHTML;
+                
+                // Validate ride data before proceeding
+                if (!rideData || !rideData.pickup || !rideData.drop) {
+                    showToast('❌ Invalid ride data. Please try again.', 'error');
                     return;
                 }
-
-                // If validation passed, update location
-                const geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ location: newCoords }, (results, status) => {
-                    if (status === "OK" && results[0]) {
-                        let address = results[0].formatted_address.split(',')[0]; 
-                        if (type === 'p') { 
-                            pCoords = newCoords; 
-                            pName = address; 
-                            pickupMarker.setDraggable(false); 
-                            // Update user current location if pickup is changed
-                            userCurrentLocation = newCoords;
-                        }
-                        else { 
-                            dCoords = newCoords; 
-                            dName = address; 
-                            dropMarker.setDraggable(false); 
-                        }
-                        updateBoxes();
-                        calculateRoute();
-                        showToast('Location updated successfully', 'success');
-                    } else {
-                        showToast('Failed to update location', 'error');
-                        resetMarker(type);
-                    }
-                });
-            });
-        }
-
-        function resetMarker(type) {
-            if (type === 'p') {
-                pickupMarker.setPosition(pCoords);
-                pickupMarker.setDraggable(false);
-            } else {
-                dropMarker.setPosition(dCoords);
-                dropMarker.setDraggable(false);
-            }
-            updateBoxes();
-        }
-
-        function calculateRoute() {
-            // Add calculating state
-            document.getElementById("distance-info").classList.add('calculating');
-            document.getElementById("distance-info").innerText = "Calculating route...";
-            document.getElementById("fare-display").innerText = "₹--";
-
-            directionsService.route({
-                origin: pCoords, 
-                destination: dCoords, 
-                travelMode: 'DRIVING'
-            }, (response, status) => {
-                // Remove calculating state
-                document.getElementById("distance-info").classList.remove('calculating');
                 
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                    const leg = response.routes[0].legs[0];
-                    
-                    // Distance ke km-e niye 12 diye gun kora hoyeche (Rate: 12/km)
-                    let fare = Math.max(20, Math.round((leg.distance.value / 1000) * 12));
-                    
-                    document.getElementById("distance-info").innerText = leg.distance.text + " • " + leg.duration.text;
-                    document.getElementById("fare-display").innerText = "₹" + fare;
-                } else {
-                    document.getElementById("distance-info").innerText = "Route calculation failed";
-                    if (typeof showToast === "function") {
-                        showToast('Failed to calculate route', 'error');
-                    }
-                }
-            });
-        }
-
-        function confirmBooking() { 
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            
-            // Add loading state
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Booking...';
-            btn.disabled = true;
-            
-            // Simulate booking process
-            setTimeout(() => {
-                showToast('Ride booked successfully! Finding nearby drivers...', 'success');
-                btn.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Ride Booked!';
-                btn.style.background = 'var(--success-color)';
+                // Add loading state
+                btn.innerHTML = '<div class="loading-spinner"></div><span style="margin-left: 8px;">Finding Drivers...</span>';
+                btn.disabled = true;
                 
+                // Generate unique ride ID and OTP
+                rideId = 'ride_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                currentOtp = generateUniqueOtp();
+                
+                // Prepare ride request data
+                const requestData = {
+                    rideId: rideId,
+                    passengerId: getPassengerId(),
+                    passengerName: getPassengerName(),
+                    passengerPhone: getPassengerPhone(),
+                    passengerRating: 4.5,
+                    pickupLat: rideData.pickup.lat,
+                    pickupLng: rideData.pickup.lng,
+                    pickupAddress: rideData.pickup.name,
+                    dropLat: rideData.drop.lat,
+                    dropLng: rideData.drop.lng,
+                    dropAddress: rideData.drop.name,
+                    distance: rideData.distance,
+                    duration: rideData.estimatedDuration,
+                    fare: rideData.estimatedFare,
+                    otp: currentOtp,
+                    timestamp: Date.now()
+                };
+
+                console.log('📤 Sending ride request:', requestData);
+
+                // Send ride request to server
+                socket.emit('rideRequest', requestData);
+
+                // Start timer modal
+                startTimer();
+
+                // Reset button after delay
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = originalHTML;
                     btn.disabled = false;
-                    btn.style.background = '';
                 }, 3000);
-            }, 2000);
+
+                showToast('🔍 Searching for nearby drivers...', 'info');
+
+            } catch (error) {
+                console.error('❌ Error confirming booking:', error);
+                showToast('❌ Failed to request ride. Please try again.', 'error');
+            }
         }
 
-        // Enhanced utility functions
+        // Enhanced timer with better UX
+        function startTimer() {
+            document.getElementById('timerModal').classList.add('show');
+            
+            let timeLeft = 180; // 3 minutes
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color as time runs out
+                const timerCircle = document.querySelector('.timer-circle');
+                if (timeLeft <= 30) {
+                    timerCircle.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                } else if (timeLeft <= 60) {
+                    timerCircle.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                }
+                
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    handleTimerExpired();
+                }
+            }, 1000);
+        }
+
+        // Handle timer expired
+        function handleTimerExpired() {
+            document.getElementById('timerModal').classList.remove('show');
+            showToast('⏰ No drivers available right now. Please try again.', 'warning');
+        }
+
+        // Handle ride request expired
+        function handleRideRequestExpired(data) {
+            if (data.rideId === rideId) {
+                document.getElementById('timerModal').classList.remove('show');
+                showToast('⏰ Ride request expired. Please try booking again.', 'warning');
+            }
+        }
+
+        // Enhanced ride accepted handler
+        function handleRideAccepted(data) {
+            if (data.rideId !== rideId) return;
+
+            clearInterval(timerInterval);
+            acceptedDriver = data.driver;
+
+            // Hide timer modal
+            document.getElementById('timerModal').classList.remove('show');
+
+            // Show driver accepted modal
+            document.getElementById('acceptedDriverName').textContent = data.driver.name || 'Driver';
+            document.getElementById('acceptedDriverRating').textContent = data.driver.rating || '4.8';
+            document.getElementById('arrivalTime').textContent = `${data.estimatedArrival || 5} mins`;
+            document.getElementById('rideOtp').textContent = currentOtp;
+            
+            // Update driver contact info
+            document.getElementById('driverPhone').innerHTML = `
+                <i class="fas fa-phone"></i>
+                <span>${data.driver.phone || '+880 1234-567890'}</span>
+            `;
+            
+            // Update driver vehicle info
+            document.getElementById('driverVehicle').innerHTML = `
+                <i class="fas fa-motorcycle"></i>
+                <span>${data.driver.vehicle || 'Honda CB 150R'}</span>
+                <span>•</span>
+                <span>${data.driver.plateNumber || 'DHK-1234'}</span>
+            `;
+
+            // Show driver accepted modal
+            document.getElementById('driverAcceptedModal').classList.add('show');
+
+            // Add driver marker to map
+            addDriverMarker(data.driverLocation);
+
+            showToast(`✅ ${data.driver.name} accepted your ride!`, 'success');
+            
+            // Auto-hide modal after 10 seconds
+            setTimeout(() => {
+                document.getElementById('driverAcceptedModal').classList.remove('show');
+            }, 10000);
+        }
+
+        // Add driver marker to map
+        function addDriverMarker(location) {
+            if (driverMarker) {
+                map.removeLayer(driverMarker);
+            }
+
+            const driverIcon = L.divIcon({
+                html: '<div class="custom-marker driver-marker"><i class="fas fa-motorcycle"></i></div>',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18],
+                className: 'custom-marker-container'
+            });
+
+            driverMarker = L.marker([location.latitude, location.longitude], { icon: driverIcon })
+                .addTo(map)
+                .bindPopup(`<b>🏍️ Your Driver</b><br>${acceptedDriver?.name || 'Driver'}`, {
+                    className: 'custom-popup'
+                });
+
+            // Extend map bounds to include driver
+            const group = new L.featureGroup([pickupMarker, dropMarker, driverMarker]);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        // Handle real-time driver location updates
+        function handleDriverLocationUpdate(data) {
+            if (data.rideId !== rideId || !driverMarker) return;
+
+            // Update marker position
+            driverMarker.setLatLng([data.location.latitude, data.location.longitude]);
+
+            // Update estimated arrival time
+            const arrivalTimeElement = document.getElementById('arrivalTime');
+            if (arrivalTimeElement && data.estimatedArrival) {
+                arrivalTimeElement.textContent = `${data.estimatedArrival} mins`;
+            }
+
+            showStatusUpdate('🚗 Driver is moving towards you', 'moving');
+        }
+
+        // Handle driver arrived
+        function handleDriverArrived(data) {
+            if (data.rideId !== rideId) return;
+
+            showStatusUpdate('🎉 Your driver has arrived!', 'arrived');
+            showToast('🎉 Driver has arrived at pickup location!', 'success');
+            
+            const arrivalTimeElement = document.getElementById('arrivalTime');
+            if (arrivalTimeElement) {
+                arrivalTimeElement.textContent = 'Arrived';
+            }
+        }
+
+        // Handle ride started
+        function handleRideStarted(data) {
+            if (data.rideId !== rideId) return;
+
+            document.getElementById('driverAcceptedModal').classList.remove('show');
+            showStatusUpdate('🚀 Ride started! Enjoy your journey', 'started');
+            showToast('🚀 Ride started! Enjoy your journey.', 'success');
+        }
+
+        // Handle ride finished
+        function handleRideFinished(data) {
+            if (data.rideId !== rideId) return;
+
+            showStatusUpdate('✅ Ride completed successfully!', 'finished');
+            showToast('✅ Ride completed! Thank you for using AutoRide.', 'success');
+            
+            // Redirect to home after 3 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 3000);
+        }
+
+        // Enhanced status updates
+        function showStatusUpdate(message, type) {
+            const statusUpdate = document.getElementById('statusUpdate');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            
+            statusIcon.className = 'status-icon ' + type;
+            switch(type) {
+                case 'arrived':
+                    statusIcon.innerHTML = '<i class="fas fa-map-marker-alt"></i>';
+                    break;
+                case 'started':
+                    statusIcon.innerHTML = '<i class="fas fa-play"></i>';
+                    break;
+                case 'moving':
+                    statusIcon.innerHTML = '<i class="fas fa-route"></i>';
+                    break;
+                case 'finished':
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    break;
+                default:
+                    statusIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            statusText.textContent = message;
+            statusUpdate.classList.add('show');
+            
+            setTimeout(() => {
+                statusUpdate.classList.remove('show');
+            }, 5000);
+        }
+
+        // Utility functions
+        function getPassengerId() {
+            let passengerId = localStorage.getItem('passengerId');
+            if (!passengerId) {
+                passengerId = 'passenger_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                localStorage.setItem('passengerId', passengerId);
+            }
+            return passengerId;
+        }
+
+        function getPassengerName() {
+            return localStorage.getItem('passengerName') || 'Passenger';
+        }
+
+        function getPassengerPhone() {
+            return localStorage.getItem('passengerPhone') || '+880 1234-567890';
+        }
+
+        // Enhanced error handling
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorContainer.style.display = 'block';
+            
+            console.error('Showing error to user:', message);
+        }
+
+        // Enhanced toast notifications
         function showToast(message, type = 'info') {
             // Remove existing toasts
             document.querySelectorAll('.toast').forEach(toast => toast.remove());
@@ -934,35 +1390,83 @@
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 5000);
         }
 
-        // Keep your original initialization
-        window.onload = initMap;
-
-        // Add some enhancement without changing core functionality
+        // FIXED: Enhanced application initialization
         document.addEventListener('DOMContentLoaded', function() {
-            // Add subtle interactions
-            const panelHandle = document.querySelector('.panel-handle');
+            console.log('🚀 AutoRide Passenger App Starting...');
             
-            panelHandle.addEventListener('mousedown', function() {
-                this.style.transform = 'scaleX(1.1)';
-            });
-            
-            panelHandle.addEventListener('mouseup', function() {
-                this.style.transform = 'scaleX(1.2)';
-            });
-            
-            panelHandle.addEventListener('mouseleave', function() {
-                this.style.transform = 'scaleX(1)';
-            });
+            try {
+                // Initialize components in order
+                const dataLoaded = initRideData();
+                if (dataLoaded) {
+                    initSocket();
+                    initMap();
+                } else {
+                    console.log('⚠️ Using fallback data, limited functionality');
+                    initSocket();
+                    initMap();
+                }
+
+                // Setup confirm booking button
+                const confirmBtn = document.getElementById('confirmBookingBtn');
+                if (confirmBtn) {
+                    confirmBtn.addEventListener('click', confirmBooking);
+                } else {
+                    console.error('❌ Confirm booking button not found');
+                }
+
+                console.log('✅ AutoRide Passenger App Initialized Successfully');
+
+            } catch (error) {
+                console.error('❌ Critical error during initialization:', error);
+                showError('Failed to initialize the application. Please refresh the page.');
+            }
         });
 
-        // Enhanced error handling without breaking original functionality
-        window.addEventListener('error', function(e) {
-            console.error('Error:', e.error);
-            showToast('Something went wrong. Please try again.', 'error');
+        // Close modals on outside click
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('driver-accepted-modal')) {
+                document.getElementById('driverAcceptedModal').classList.remove('show');
+            }
         });
+
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('❌ JavaScript Error:', e.error);
+            showToast('❌ Something went wrong. Please try again.', 'error');
+        });
+
+        // Add custom CSS for enhanced popup styling
+        const style = document.createElement('style');
+        style.textContent = `
+            .custom-popup .leaflet-popup-content-wrapper {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                border: none;
+                font-family: 'Inter', sans-serif;
+            }
+            
+            .custom-popup .leaflet-popup-content {
+                margin: 12px 16px;
+                font-weight: 500;
+                color: #374151;
+            }
+            
+            .custom-popup .leaflet-popup-tip {
+                background: white;
+                border: none;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .custom-marker-container {
+                background: transparent !important;
+                border: none !important;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
